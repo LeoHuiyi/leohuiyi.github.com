@@ -4,6 +4,7 @@ var node_modules = path.resolve(__dirname, 'node_modules');
 // var pathToReact = path.resolve(node_modules, 'react/dist');
 // var pathToJquery = path.resolve(node_modules, 'jquery/dist');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var AssetsPlugin = require('assets-webpack-plugin');
 
 module.exports = {
     //插件项
@@ -13,7 +14,8 @@ module.exports = {
             }
         }),
         new webpack.optimize.CommonsChunkPlugin('common', 'common.js'),
-        new ExtractTextPlugin("[name].css")
+        new ExtractTextPlugin("[name].css"),
+        new AssetsPlugin()
     ],
     //页面入口文件配置
     entry: {
@@ -23,7 +25,7 @@ module.exports = {
     //入口文件输出配置
     output: {
         path: '../javascripts/',
-        filename: '[name].js',
+        filename: '[name].[hash].js',
         // publicPath: 'static/dist/js/'
     },
     module: {

@@ -9,207 +9,92 @@
     <meta name="author" content="">
     <link rel="stylesheet" type="text/css" href="./javascripts/index.css">
     <style type="text/css">
-        #yddContainer {
-            display: block;
-            font-family: Microsoft YaHei;
+        /*
+         * Masthead for nav
+         */
+        .blog-masthead {
+            background-color: #428bca;
+            -webkit-box-shadow: inset 0 -2px 5px rgba(0, 0, 0, .1);
+            box-shadow: inset 0 -2px 5px rgba(0, 0, 0, .1);
+        }
+        /* Nav links */
+
+        .blog-nav-item {
             position: relative;
-            width: 100%;
-            height: 100%;
-            top: -4px;
-            left: -4px;
-            font-size: 12px;
-            border: 1px solid
+            display: inline-block;
+            padding: 10px;
+            font-weight: 500;
+            color: #cdddeb;
         }
 
-        #yddTop {
-            display: block;
-            height: 22px
-        }
-
-        #yddTopBorderlr {
-            display: block;
-            position: static;
-            height: 17px;
-            padding: 2px 28px;
-            line-height: 17px;
-            font-size: 12px;
-            color: #5079bb;
-            font-weight: bold;
-            border-style: none solid;
-            border-width: 1px
-        }
-
-        #yddTopBorderlr .ydd-sp {
-            position: absolute;
-            top: 2px;
-            height: 0;
-            overflow: hidden
-        }
-
-        .ydd-icon {
-            left: 5px;
-            width: 17px;
-            padding: 0px 0px 0px 0px;
-            padding-top: 17px;
-            background-position: -16px -44px
-        }
-
-        .ydd-close {
-            right: 5px;
-            width: 16px;
-            padding-top: 16px;
-            background-position: left -44px
-        }
-
-        #yddKeyTitle {
-            float: left;
-            text-decoration: none
-        }
-
-        #yddMiddle {
-            display: block;
-            margin-bottom: 10px
-        }
-
-        .ydd-tabs {
-            display: block;
-            margin: 5px 0;
-            padding: 0 5px;
-            height: 18px;
-            border-bottom: 1px solid
-        }
-
-        .ydd-tab {
-            display: block;
-            float: left;
-            height: 18px;
-            margin: 0 5px -1px 0;
-            padding: 0 4px;
-            line-height: 18px;
-            border: 1px solid;
-            border-bottom: none
-        }
-
-        .ydd-trans-container {
-            display: block;
-            line-height: 160%
-        }
-
-        .ydd-trans-container a {
+        .blog-nav-item:hover,
+        .blog-nav-item:focus {
+            color: #fff;
             text-decoration: none;
         }
+        /* Active state gets a caret at the bottom */
+        .blog-nav .active {
+            color: #fff;
+        }
 
-        #yddBottom {
+        .blog-nav .active:after {
             position: absolute;
             bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 22px;
-            line-height: 22px;
-            overflow: hidden;
-            background-position: left -22px
-        }
-
-        .ydd-padding010 {
-            padding: 0 10px
-        }
-
-        #yddWrapper {
-            color: #252525;
-            z-index: 10001;
-            background: url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ab20.png);
-        }
-
-        #yddContainer {
-            background: #fff;
-            border-color: #4b7598
-        }
-
-        #yddTopBorderlr {
-            border-color: #f0f8fc
-        }
-
-        #yddWrapper .ydd-sp {
-            background-image: url(chrome-extension://eopjamdnofihpioajgfdikhhbobonhbb/ydd-sprite.png)
-        }
-
-        #yddWrapper a,
-        #yddWrapper a:hover,
-        #yddWrapper a:visited {
-            color: #50799b
-        }
-
-        #yddWrapper .ydd-tabs {
-            color: #959595
-        }
-
-        .ydd-tabs,
-        .ydd-tab {
-            background: #fff;
-            border-color: #d5e7f3
-        }
-
-        #yddBottom {
-            color: #363636
-        }
-
-        #yddWrapper {
-            min-width: 250px;
-            max-width: 400px;
+            left: 50%;
+            width: 0;
+            height: 0;
+            margin-left: -5px;
+            vertical-align: middle;
+            content: " ";
+            border-right: 5px solid transparent;
+            border-bottom: 5px solid;
+            border-left: 5px solid transparent;
         }
     </style>
 </head>
 
 <body>
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="blog-masthead">
         <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Project name</a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li class="dropdown-header">Nav header</li>
-                            <li><a href="#">Separated link</a></li>
-                            <li><a href="#">One more separated link</a></li>
-                        </ul>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="../navbar/">Default</a></li>
-                    <li><a href="../navbar-static-top/">Static top</a></li>
-                    <li class="active"><a href="./">Fixed top <span class="sr-only">(current)</span></a></li>
-                </ul>
-            </div>
-            <!--/.nav-collapse -->
+            <nav class="blog-nav">
+                <a class="blog-nav-item active" href="#">Home</a>
+                <a class="blog-nav-item" href="#">New features</a>
+                <a class="blog-nav-item" href="#">Press</a>
+                <a class="blog-nav-item" href="#">New hires</a>
+                <a class="blog-nav-item" href="#">About</a>
+            </nav>
         </div>
-    </nav>
+    </div>
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Hello, world!</h1>
+            <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+            <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more »</a></p>
+        </div>
+    </div>
     <div class="container">
-        <!-- Main component for a primary marketing message or call to action -->
-        <div class="jumbotron">
-            <h1>Navbar example</h1>
-            <p>This example is a quick exercise to illustrate how the default, static and fixed to top navbar work. It includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>
-            <p>To see the difference between static and fixed top navbars, just scroll.</p>
-            <p>
-                <a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs »</a>
-            </p>
+        <!-- Example row of columns -->
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>Heading</h2>
+                <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+                <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+            </div>
+            <div class="col-md-4">
+                <h2>Heading</h2>
+                <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                <p><a class="btn btn-default" href="#" role="button">View details »</a></p>
+            </div>
         </div>
+        <hr>
+        <footer>
+            <p>© Company 2014</p>
+        </footer>
     </div>
     <script src="./javascripts/common.js"></script>
     <script src="./javascripts/index.js"></script>
