@@ -28,7 +28,7 @@ module.exports = {
     },
     //入口文件输出配置
     output: {
-        path: '../dist/',
+        path: path.join(__dirname, '../dist/'),
         filename: '[name].[hash].js',
         publicPath: 'dist/'
     },
@@ -46,8 +46,7 @@ module.exports = {
         }, {
             test: /\.(woff|eot|svg|woff2|ttf)$/,
             loader: 'url-loader?limit=100000'
-        }],
-        // noParse: [pathToReact, pathToJquery]
+        }]
     },
     //其它解决方案配置
     resolve: {
