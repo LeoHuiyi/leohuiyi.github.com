@@ -6,13 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>leoCode</title>
     <link href="css/leoCode.css" rel="stylesheet">
+
     <script src="js/lib/jquery.min.js"></script>
     <script src="js/leoCode.js"></script>
 </head>
 
 <body>
+    <div id="leoLoading" class="loading">
+        <div class="sk-folding-cube">
+            <div class="sk-cube1 sk-cube"></div>
+            <div class="sk-cube2 sk-cube"></div>
+            <div class="sk-cube4 sk-cube"></div>
+            <div class="sk-cube3 sk-cube"></div>
+        </div>
+    </div>
     <header>
-        <div class="logo">LeoRun</div>
+        <div class="logo">leoCode</div>
         <div class="btn-group">
             <a class="btn" id="help">帮助</a>
             <a class="btn" href="http://leohuiyi.github.io/" target="_blank">GitHub</a>
@@ -38,25 +47,35 @@
     </section>
     <div class="dialog-Wrap" id="leoDialog">
         <div class="dialog" tabindex="0">
-            <div class="dialog-title">帮助</div>
-            <div class="dialog-body">
-                <div>
-                    <p style="font-weight:bold;font-size:14pt;color:#A00;">快捷键使用说明</p>
-                    <hr>
-                    <p><span class="key">F11</span>当前editor全屏</p>
-                    <p><span class="key">Ctrl + S</span>更新预览区代码</p>
-                    <p><span class="key">Ctrl + F</span>查找当前editor的代码</p>
-                    <p><span class="key">Ctrl + Q</span>打开当前editor的参数面板</p>
-                    <p><span class="key">Ctrl + Shift + F</span>格式化当前editor的代码</p>
+            <div class="dialog-content">
+                <div class="dialog-header">
+                    <button type="button" class="close">
+                        <span>×</span>
+                    </button>
+                    <div class="dialog-title">帮助</div>
                 </div>
-                <div>
-                    <p style="font-weight:bold;font-size:14pt;color:#A00;">使用说明</p>
-                    <hr>
-                    <p>可使用Emmet插件</p>
+                <div class="dialog-body">
+                    <div>
+                        <p style="font-weight:bold;font-size:14pt;color:#A00;">快捷键</p>
+                        <hr>
+                        <p><span class="key">F11</span>当前editor全屏</p>
+                        <p><span class="key">Ctrl + S</span>更新预览区代码</p>
+                        <p><span class="key">Ctrl + F</span>查找当前editor的代码</p>
+                        <p><span class="key">Ctrl + Q</span>打开当前editor的参数面板</p>
+                        <p><span class="key">Ctrl + Shift + F</span>格式化当前editor的代码</p>
+                    </div>
+                    <div>
+                        <p style="font-weight:bold;font-size:14pt;color:#A00;">使用说明</p>
+                        <hr>
+                        <p>左上editor编辑HTML代码</p>
+                        <p>右上editor编辑CSS代码</p>
+                        <p>左下editor编辑JS代码</p>
+                        <p>自带Emmet插件</p>
+                    </div>
                 </div>
-            </div>
-            <div class="dialog-bttom">
-                <span id="leoDialog-btn" class="dialog-btn">确定</span>
+                <div class="dialog-footer">
+                    <span id="leoDialog-btn" class="dialog-btn">确定</span>
+                </div>
             </div>
         </div>
     </div>

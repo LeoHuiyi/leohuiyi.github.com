@@ -22,6 +22,13 @@ $(function() {
 
     resize();
 
+    function getData(){
+        var url = document.location.search;
+        console.log(url);
+    }
+
+    getData();
+
     var leoLoad = {
         load: function(path, callback) {
             var head = document.getElementsByTagName('head')[0];
@@ -63,92 +70,53 @@ $(function() {
         var editorHtml = new Editor(ace, {
             id: 'editor_html',
             mode: 'ace/mode/html',
-            leoSnipetArr: ['ace/snippets/javascript', 'ace/snippets/css']
-        }).getEditor();
-
-        leoLoad.load('js/lib/js-beautify/beautify-html.js').done(function() {
-            editorHtml.commands.addCommands([{
-                name: "beautify",
-                bindKey: {
-                    win: "Ctrl-Alt-f",
-                    mac: "Command-f"
-                },
+            leoSnipetArr: ['ace/snippets/javascript', 'ace/snippets/css'],
+            leoBeautify: {
+                url: 'js/lib/js-beautify/beautify-html.js',
                 exec: function(editor) {
                     editor.setValue(html_beautify(editor.getValue()));
                 }
-            }]);
-        }.bind(this));
-
-        editorHtml.commands.addCommands([{
-            name: "save",
-            bindKey: {
-                win: "Ctrl-s",
-                mac: "Command-s"
             },
-            exec: function(editor) {
-                save();
+            leoSaveCode: {
+                exec: function(editor) {
+                    save();
+                }
             }
-        }]);
+        }).getEditor();
 
         // editorCss
         var editorCss = new Editor(ace, {
             id: 'editor_css',
-            mode: 'ace/mode/css'
-        }).getEditor();
-
-        leoLoad.load('js/lib/js-beautify/beautify-css.js').done(function() {
-            editorCss.commands.addCommands([{
-                name: "beautify",
-                bindKey: {
-                    win: "Ctrl-Alt-f",
-                    mac: "Command-f"
-                },
+            mode: 'ace/mode/css',
+            leoBeautify: {
+                url: 'js/lib/js-beautify/beautify-css.js',
                 exec: function(editor) {
                     editor.setValue(css_beautify(editor.getValue()));
                 }
-            }]);
-        }.bind(this));
-
-        editorCss.commands.addCommands([{
-            name: "save",
-            bindKey: {
-                win: "Ctrl-s",
-                mac: "Command-s"
             },
-            exec: function(editor) {
-                save();
+            leoSaveCode: {
+                exec: function(editor) {
+                    save();
+                }
             }
-        }]);
+        }).getEditor();
 
         // editorJs
         var editorJs = new Editor(ace, {
             id: 'editor_js',
-            mode: 'ace/mode/javascript'
-        }).getEditor();
-
-        leoLoad.load('js/lib/js-beautify/beautify.js').done(function() {
-            editorJs.commands.addCommands([{
-                name: "beautify",
-                bindKey: {
-                    win: "Ctrl-Alt-f",
-                    mac: "Command-f"
-                },
+            mode: 'ace/mode/javascript',
+            leoBeautify: {
+                url: 'js/lib/js-beautify/beautify.js',
                 exec: function(editor) {
                     editor.setValue(js_beautify(editor.getValue()));
                 }
-            }]);
-        }.bind(this));
-
-        editorJs.commands.addCommands([{
-            name: "save",
-            bindKey: {
-                win: "Ctrl-s",
-                mac: "Command-s"
             },
-            exec: function(editor) {
-                save();
+            leoSaveCode: {
+                exec: function(editor) {
+                    save();
+                }
             }
-        }]);
+        }).getEditor();
 
         function getEditorHtml() {
             var html = '';
@@ -159,16 +127,24 @@ $(function() {
                 if (editorJs) {
                     index = html.indexOf('</body>');
                     value = $.trim(editorJs.getValue());
-                    if (value && index > -1) {
-                        html = html.slice(0, index) + '<script>try{' + editorJs.getValue() + '}catch(e){}</script>' + html.slice(index);
+                    if (value) {
+                        if (index > -1) {
+                            html = html.slice(0, index) + '<script>try{' + editorJs.getValue() + '}catch(e){}</script>' + html.slice(index);
+                        } else {
+                            html += '<script>try{' + editorJs.getValue() + '}catch(e){}</script>';
+                        }
                     }
                 }
 
                 if (editorCss) {
                     index = html.indexOf('</body>');
                     value = $.trim(editorCss.getValue());
-                    if (value && index > -1) {
-                        html = html.slice(0, index) + '<style>' + editorCss.getValue() + '</style>' + html.slice(index)
+                    if (value) {
+                        if (index > -1) {
+                            html = html.slice(0, index) + '<style>' + editorCss.getValue() + '</style>' + html.slice(index);
+                        } else {
+                            html += '<style>' + editorCss.getValue() + '</style>';
+                        }
                     }
                 }
             }
@@ -181,7 +157,7 @@ $(function() {
         function save(html) {
             html = $.trim(html || getEditorHtml());
 
-            var iframe = $('<iframe frameborder="0"></iframe>')[0];
+            var iframe = $('<iframe frameborder="0" src="about:blank"></iframe>')[0];
             $previewIframe.html(iframe);
             var iframeDoc = iframe.contentWindow.document;
             iframeDoc.open();
@@ -222,23 +198,26 @@ $(function() {
             var newWindow = window.open("about:blank", "top=0, left=0");
             var newDoc = newWindow.document;
 
-                newDoc.open();
-                newDoc.write(html);
-                newDoc.close();
+            newDoc.open();
+            newDoc.write(html);
+            newDoc.close();
         });
 
-        var $leoDialog = $('#leoDialog');
+        var leoDialog = new Dialog({
+            targetSelector: '#leoDialog',
+            onAfterInit: function(){
+                this.$target.find('#leoDialog-btn').on('click', function(event) {
+                    event.preventDefault();
+
+                    this.hide();
+                }.bind(this));
+            }
+        });
 
         $('#help').on('click', function(event) {
             event.preventDefault();
 
-            $leoDialog.show()
-        });
-
-        $('#leoDialog-btn').on('click', function(event) {
-            event.preventDefault();
-
-            $leoDialog.hide();
+            leoDialog.show()
         });
 
         $win.on('winResize', function(event) {
@@ -246,6 +225,27 @@ $(function() {
             editorCss && editorCss.resize();
             editorJs && editorJs.resize();
         });
+
+        $('#leoLoading').css({'opacity': 0, 'visibility': 'hidden'});
+
+        function shareUrl(editorHtml, editorHtml, editorJs){
+            var base = document.location.href.replace(/.html.+/, '.html'),
+            leoCode = {};
+
+            if(editorHtml){
+                leoCode.html = editorHtml.getValue();
+            }
+
+            if(editorCss){
+                leoCode.html = editorCss.getValue();
+            }
+
+            if(editorJs){
+                leoCode.html = editorJs.getValue();
+            }
+
+            return base + '?leoCode=' + JSON.stringify(leoCode);
+        }
     });
 
     function Editor(ace, op) {
@@ -255,11 +255,11 @@ $(function() {
             enableBasicAutocompletion: true,
             enableSnippets: true,
             enableLiveAutocompletion: true,
-            enableEmmet: false,
+            enableEmmet: true,
             fontSize: '16px',
             printMargin: false,
             leoSetFullScreen: true,
-            leoSetShowSettingsMenu: true
+            leoSetShowSettingsMenu: true,
         }
 
         if (!ace) {
@@ -277,7 +277,7 @@ $(function() {
                 editor = this.editor = this.ace.edit(op.id);
 
             delete op.id;
-            this.setLanguageTools().setEmmet().setSnippet().setFullScreen().setShowSettingsMenu();
+            this.setLanguageTools().setEmmet().setSnippet().setFullScreen().setShowSettingsMenu().setBeautifyCode().setSaveCode();
             editor.setOptions(op);
             editor.getSession().setUseWrapMode(true);
 
@@ -369,6 +369,50 @@ $(function() {
 
             return this;
         },
+        setBeautifyCode: function() {
+            var editor = this.editor,
+                leoBeautifyOp = this._setOp(['leoBeautify']);
+
+            if (leoBeautifyOp && leoBeautifyOp.leoBeautify) {
+                var leoBeautify = leoBeautifyOp.leoBeautify;
+
+                leoLoad.load(leoBeautify.url).done(function() {
+                    editor.commands.addCommands([{
+                        name: "beautifyCode",
+                        bindKey: {
+                            win: "Ctrl-Alt-f",
+                            mac: "Command-f"
+                        },
+                        exec: function(editor) {
+                            leoBeautify.exec && leoBeautify.exec(editor);
+                        }
+                    }]);
+                }.bind(this));
+            }
+
+            return this;
+        },
+        setSaveCode: function() {
+            var editor = this.editor,
+                saveCodeOp = this._setOp(['leoSaveCode']);
+
+            if (saveCodeOp && saveCodeOp.leoSaveCode) {
+                var leoSaveCode = saveCodeOp.leoSaveCode;
+
+                editor.commands.addCommands([{
+                    name: "save",
+                    bindKey: {
+                        win: "Ctrl-s",
+                        mac: "Command-s"
+                    },
+                    exec: function(editor) {
+                        leoSaveCode.exec && leoSaveCode.exec(editor);
+                    }
+                }]);
+            }
+
+            return this;
+        },
         setSnippet: function() {
             var snippetOp = this._setOp(['leoSnipetArr']);
 
@@ -398,4 +442,79 @@ $(function() {
             return this.editor;
         }
     });
-})
+
+    function Dialog(options){
+        var defaultOp = {
+            targetSelector: '#leoDialog',
+            closeSelector: '.close',
+            dialogSelector: '.dialog',
+            backdropClose: true,
+            onAfterInit: $.noop,
+            onBeforeShow: $.noop
+        }
+
+        this.options = $.extend({}, defaultOp, options);
+        this.init();
+
+        return this;
+    }
+
+    $.extend(Dialog.prototype, {
+        init: function(){
+            var op = this.options;
+
+            this.$target = $(op.targetSelector);
+            this.$dialog = $(op.dialogSelector);
+            this.addEvent();
+            op.onAfterInit.call(this);
+
+            return this;
+        },
+        addEvent: function(){
+            var op = this.options, This = this;
+
+            $close = this.$target.find(op.closeSelector);
+
+            if($close[0]){
+                $close.on('click', function(event) {
+                    event.preventDefault();
+
+                    This.hide();
+                });
+            }
+
+            if(op.backdropClose){
+                this.$target.on('mousedown', function(event) {
+                    event.preventDefault();
+
+                    if(event.target === this){
+                        This.hide();
+                    }
+                });
+            }
+
+            return this;
+        },
+        getTarget: function(){
+            return this.$target;
+        },
+        show: function(){
+            this.options.onBeforeShow.call(this);
+            this.$dialog.css({'transform': 'scale(1)'});
+            this.$target.css({'opacity': 1, 'visibility': 'visible'}).scrollTop(0);
+
+            return this;
+        },
+        hide: function(){
+            this.$dialog.css({'transform': 'scale(0)'});
+            this.$target.css({'opacity': 0, 'visibility': 'hidden'});
+
+            return this;
+        },
+        destroy: function(){
+            this.$target.remove();
+
+            return this;
+        }
+    });
+});
