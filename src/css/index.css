@@ -44,7 +44,6 @@
 
 
 /* Nav links */
-
 .blog-nav-item {
     font-weight: 500;
     position: relative;
@@ -61,7 +60,6 @@
 
 
 /* Active state gets a caret at the bottom */
-
 .blog-nav .active {
     color: #fff;
 }
