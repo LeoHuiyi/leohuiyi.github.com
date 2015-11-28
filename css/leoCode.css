@@ -323,6 +323,24 @@ section nav .select .show {
     background-image: linear-gradient(bottom, #a5d288 0%, #a5d288 100%);
 }
 
+.dialog-Wrap.show{
+    opacity: 1;
+    visibility: visible;
+}
+
+.dialog-Wrap.show .dialog{
+    transform: scale(1);
+}
+
+.dialog-Wrap.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.dialog-Wrap.hide .dialog{
+    transform: scale(0);
+}
+
 .loading {
     position: fixed;
     z-index: 10000;

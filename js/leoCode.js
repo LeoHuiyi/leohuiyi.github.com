@@ -227,25 +227,6 @@ $(function() {
         });
 
         $('#leoLoading').css({'opacity': 0, 'visibility': 'hidden'});
-
-        function shareUrl(editorHtml, editorHtml, editorJs){
-            var base = document.location.href.replace(/.html.+/, '.html'),
-            leoCode = {};
-
-            if(editorHtml){
-                leoCode.html = editorHtml.getValue();
-            }
-
-            if(editorCss){
-                leoCode.html = editorCss.getValue();
-            }
-
-            if(editorJs){
-                leoCode.html = editorJs.getValue();
-            }
-
-            return base + '?leoCode=' + JSON.stringify(leoCode);
-        }
     });
 
     function Editor(ace, op) {
@@ -447,7 +428,6 @@ $(function() {
         var defaultOp = {
             targetSelector: '#leoDialog',
             closeSelector: '.close',
-            dialogSelector: '.dialog',
             backdropClose: true,
             onAfterInit: $.noop,
             onBeforeShow: $.noop
@@ -464,7 +444,6 @@ $(function() {
             var op = this.options;
 
             this.$target = $(op.targetSelector);
-            this.$dialog = $(op.dialogSelector);
             this.addEvent();
             op.onAfterInit.call(this);
 
@@ -485,8 +464,6 @@ $(function() {
 
             if(op.backdropClose){
                 this.$target.on('mousedown', function(event) {
-                    event.preventDefault();
-
                     if(event.target === this){
                         This.hide();
                     }
@@ -500,14 +477,12 @@ $(function() {
         },
         show: function(){
             this.options.onBeforeShow.call(this);
-            this.$dialog.css({'transform': 'scale(1)'});
-            this.$target.css({'opacity': 1, 'visibility': 'visible'}).scrollTop(0);
+            this.$target.removeClass('hide').addClass('show').scrollTop(0);
 
             return this;
         },
         hide: function(){
-            this.$dialog.css({'transform': 'scale(0)'});
-            this.$target.css({'opacity': 0, 'visibility': 'hidden'});
+            this.$target.removeClass('show').addClass('hide');
 
             return this;
         },
