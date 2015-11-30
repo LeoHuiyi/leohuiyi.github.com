@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>HTML5 Canvas Draw</title>
+</head>
+
+<body>
+    <div class="wrap">
+        <canvas id="canvas" class="fl" width="600" height="400"></canvas>
+        <div id="control" class="fl">
+            <div id="canvas-color">
+                <h5>画笔颜色</h5>
+                <ul>
+                    <li style="background:#fef4ac"></li>
+                    <li style="background:#0018ba"></li>
+                    <li style="background:#ffc200"></li>
+                    <li style="background:#f32f15"></li>
+                    <li style="background:#cccccc"></li>
+                    <li style="background:#5ab639"></li>
+                </ul>
+            </div>
+            <div id="canvas-brush">
+                <h5>画笔大小</h5>
+                <span class="small-brush"></span>
+                <span class="middle-brush"></span>
+                <span class="big-brush"></span>
+            </div>
+            <div id="canvas-control">
+                <h5>操作</h5>
+                <span title="上一步" class="return-control"></span>
+                <span title="下一步" class="next-control"></span>
+                <span title="清除" class="empty-control"></span>
+            </div>
+            <div id="canvas-drawImage">
+                <h5>生成图像</h5>
+                <p>
+                    <button class="drawImage">生成图像</button>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="imgDiv"></div>
+</body>
+
+</html>

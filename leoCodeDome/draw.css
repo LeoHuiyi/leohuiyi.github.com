@@ -1,0 +1,129 @@
+html,
+body,
+canvas,
+div,
+ul,
+li,
+h5,
+p {
+    margin: 0;
+    padding: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+img {
+    border: 1px #ccc solid;
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+.wrap {
+    overflow: hidden;
+    width: 740px;
+    margin: 20px auto 5px;
+    border: 1px #ccc solid;
+}
+
+.fl {
+    display: inline;
+    float: left;
+}
+
+#canvas {
+    cursor: crosshair;
+    border-right: 1px #ccc solid;
+}
+
+#control {
+    width: 130px;
+    height: 400px;
+    margin-left: 4px;
+}
+
+#control div {
+    padding: 5px;
+}
+
+#canvas-color ul {
+    overflow: hidden;
+}
+
+#canvas-color ul li {
+    display: inherit;
+    float: left;
+    width: 13px;
+    height: 13px;
+    margin: 8px;
+    cursor: pointer;
+    border: 3px #fff solid;
+}
+
+#canvas-color ul li.js-border-color {
+    border-color: #000;
+}
+
+#canvas-brush span {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    background: url(images/brush.png);
+}
+
+#canvas-brush span.small-brush {
+    background-position: -6px -6px;
+}
+
+#canvas-brush span.middle-brush {
+    background-position: -31px -6px;
+}
+
+#canvas-brush span.big-brush {
+    background-position: -56px -6px;
+}
+
+#canvas-brush span.js-bg-color {
+    background-color: #aaa;
+}
+
+#canvas-control span {
+    display: inline-block;
+    width: 20px;
+    height: 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    background: url(images/sketchpad_icons.png);
+}
+
+#canvas-control span.return-control {
+    background-position: -2px -148px;
+}
+
+#canvas-control span.next-control {
+    background-position: right -168px;
+}
+
+#canvas-control span.empty-control {
+    background-position: -2px -188px;
+}
+
+#canvas-control span.js-return-control {
+    background-position: -2px -209px;
+}
+
+#canvas-control span.js-next-control {
+    background-position: right -230px;
+}
+
+#canvas-control span.js-empty-control {
+    background-position: -2px -251px;
+}
+
+#imgDiv {
+    text-align: center;
+}
