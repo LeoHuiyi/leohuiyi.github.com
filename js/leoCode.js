@@ -526,6 +526,7 @@ var leoCode = {
 
                 var $previewBtns = $('#preview-btns');
                 var $preview = $('#preview');
+                var $fullscreen = $('#fullscreen');
                 var isFullScreen = false;
 
                 $preview.on('mouseenter', function(event) {
@@ -538,14 +539,16 @@ var leoCode = {
                     $previewBtns.hide();
                 });
 
-                $('#fullscreen').on('click', function(event) {
+                $fullscreen.on('click', function(event) {
                     event.preventDefault();
 
                     if (!isFullScreen) {
                         $preview.addClass('editor_fullScreen');
+                        $fullscreen.addClass('btn-select');
                         isFullScreen = true;
                     } else {
                         $preview.removeClass('editor_fullScreen');
+                        $fullscreen.removeClass('btn-select');
                         isFullScreen = false;
                     }
                 });
