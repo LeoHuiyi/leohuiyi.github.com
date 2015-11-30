@@ -37,16 +37,16 @@ var leoCode = {
 
     utils: {
         getUrlObj: function() {
-            var leoCodeStr = $.trim(decodeURIComponent(document.location.search.replace(/\?leoCode=/, ''))),
-                obj = {};
+            var args = {};
+            var match = null;
+            var search = decodeURIComponent(location.search.substring(1));
+            var reg = /(?:([^&]+)=([^&]+))/g;
 
-            try {
-                obj = $.parseJSON(leoCodeStr);
-            } catch (e) {
-                return {};
+            while ((match = reg.exec(search)) !== null) {
+                args[match[1]] = match[2];
             }
 
-            return obj;
+            return args;
         },
 
         htmlEncode: function(str) {
@@ -82,23 +82,15 @@ var leoCode = {
             }
 
             return htmlStr;
-        },
-
-        setUrlObj: function(op) {
-            var base = document.location.href.replace(/.html.+/, '.html'),
-                option = $.extend({
-                    html: '',
-                    js: '',
-                    css: ''
-                }, op),
-                htmlEncode = leoCode.utils.htmlEncode;
-
-            if (option.html) {
-                option.html = htmlEncode(option.html);
-            }
-
-            return base + '?leoCode=' + encodeURIComponent(JSON.stringify(option));
         }
+    },
+
+    ajaxData: function(url) {
+        return $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'text'
+        });
     },
 
     getLeoCodeOption: function() {
@@ -106,17 +98,21 @@ var leoCode = {
             op = utils.getUrlObj(),
             option = $.extend({
                 mode: 'editorAll', //editorAll, preview
-                loadUrlArr: ['js/lib/ace/ace.js']
+                loadUrlArr: ['js/lib/ace/ace.js', 'js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js']
             }, op);
 
-        option.html && (option.html = utils.htmlDecode(option.html));
+            console.log(option);
 
-        if (option.mode === 'preview') {
-            option.iframeHtml = utils.getCodeStr(option);
+        if (option.htmlUrl) {
+            option.htmlDfd = this.ajaxData(option.htmlUrl);
         }
 
-        if (option.mode === 'editorAll') {
-            option.loadUrlArr.push('js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js')
+        if (option.cssUrl) {
+            option.cssDfd = this.ajaxData(option.cssUrl);
+        }
+
+        if (option.jsUrl) {
+            option.jsDfd = this.ajaxData(option.jsUrl);
         }
 
         return option;
@@ -435,7 +431,6 @@ var leoCode = {
             leoLoad.loadAll(LeoCodeOption.loadUrlArr).done(function() {
                 var Editor = this.getEditor(),
                     Dialog = this.getDialog(),
-                    setUrlObj = this.utils.setUrlObj,
                     getCodeStr = this.utils.getCodeStr;
                 // editorHtml
                 var editorHtml = new Editor(ace, {
@@ -560,13 +555,11 @@ var leoCode = {
                 $('#new-preview').on('click', function(event) {
                     event.preventDefault();
 
-                    var url = setUrlObj({
-                        html: editorHtml && editorHtml.getValue(),
-                        css: editorCss && editorCss.getValue(),
-                        js: editorJs && editorJs.getValue(),
-                        mode: 'preview'
-                    });
-                    var newWindow = window.open(url);
+                    var newDoc = window.open().document;
+
+                    newDoc.open();
+                    newDoc.write(getEditorHtml());
+                    newDoc.close();
                 });
 
                 var leoDialog = new Dialog({
@@ -586,23 +579,6 @@ var leoCode = {
                     leoDialog.show()
                 });
 
-                var leoShare = new Dialog({
-                    targetSelector: '#leoShare',
-                    onBeforeShow: function() {
-                        $('#leoShareUrl').text(setUrlObj({
-                            html: editorHtml && editorHtml.getValue(),
-                            css: editorCss && editorCss.getValue(),
-                            js: editorJs && editorJs.getValue()
-                        }));
-                    }
-                });
-
-                $('#share').on('click', function(event) {
-                    event.preventDefault();
-
-                    leoShare.show()
-                });
-
                 $win.on('winResize', function(event) {
                     editorHtml && editorHtml.resize();
                     editorCss && editorCss.resize();
@@ -610,26 +586,32 @@ var leoCode = {
                 });
 
                 function initCode(LeoCodeOption) {
-                    var html = LeoCodeOption.html,
-                        css = LeoCodeOption.css,
-                        js = LeoCodeOption.js,
+                    var htmlDfd = LeoCodeOption.htmlDfd,
+                        cssDfd = LeoCodeOption.cssDfd,
+                        jsDfd = LeoCodeOption.jsDfd,
                         changeTimer,
                         $runCode = $('#runCode'),
                         isRunCode = true;
 
-                    if (html) {
-                        LeoCodeOption.htmlBeautify && (html = html_beautify(html));
-                        editorHtml.setValue(html);
+                    if (htmlDfd) {
+                        htmlDfd.done(function(data) {
+                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            editorHtml.setValue(data);
+                        });
                     }
 
-                    if (css) {
-                        LeoCodeOption.cssBeautify && (css = css_beautify(css));
-                        editorCss.setValue(css);
+                    if (cssDfd) {
+                        cssDfd.done(function(data) {
+                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            editorCss.setValue(data);
+                        });
                     }
 
-                    if (js) {
-                        LeoCodeOption.jsBeautify && (js = js_beautify(js));
-                        editorJs.setValue(js);
+                    if (jsDfd) {
+                        jsDfd.done(function(data) {
+                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            editorJs.setValue(data);
+                        });
                     }
 
                     save();
@@ -660,11 +642,11 @@ var leoCode = {
 
                         if (isRunCode) {
                             changeTimer && clearTimeout(changeTimer);
-                            $runCode.addClass('btn-disabled');
+                            $runCode.removeClass('btn-select');
                             isRunCode = false;
                         } else {
                             save();
-                            $runCode.removeClass('btn-disabled');
+                            $runCode.addClass('btn-select');
                             isRunCode = true;
                         }
                     });
@@ -678,17 +660,6 @@ var leoCode = {
                 initCode(LeoCodeOption);
             }.bind(this));
         }.bind(this));
-    },
-
-    preview: function(LeoCodeOption) {
-        $(function() {
-            var iframe = $('<iframe frameborder="0" src="about:blank" class="iframe_fullScreen"></iframe>')[0];
-            $('body').html(iframe);
-            var iframeDoc = iframe.contentWindow.document;
-            iframeDoc.open();
-            iframeDoc.write(LeoCodeOption.iframeHtml);
-            iframeDoc.close();
-        });
     },
 
     init: function() {
