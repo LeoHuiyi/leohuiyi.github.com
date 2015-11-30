@@ -101,8 +101,6 @@ var leoCode = {
                 loadUrlArr: ['js/lib/ace/ace.js', 'js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js']
             }, op);
 
-            console.log(option);
-
         if (option.htmlUrl) {
             option.htmlDfd = this.ajaxData(option.htmlUrl);
         }
@@ -402,7 +400,7 @@ var leoCode = {
         return Dialog;
     },
 
-    editorAll: function(LeoCodeOption) {
+    editorAll: function(leoCodeOption) {
         $(function() {
             var $win = $(window),
                 $header = $('header'),
@@ -428,7 +426,7 @@ var leoCode = {
 
             resize();
 
-            leoLoad.loadAll(LeoCodeOption.loadUrlArr).done(function() {
+            leoLoad.loadAll(leoCodeOption.loadUrlArr).done(function() {
                 var Editor = this.getEditor(),
                     Dialog = this.getDialog(),
                     getCodeStr = this.utils.getCodeStr;
@@ -585,31 +583,31 @@ var leoCode = {
                     editorJs && editorJs.resize();
                 });
 
-                function initCode(LeoCodeOption) {
-                    var htmlDfd = LeoCodeOption.htmlDfd,
-                        cssDfd = LeoCodeOption.cssDfd,
-                        jsDfd = LeoCodeOption.jsDfd,
+                function initCode(leoCodeOption) {
+                    var htmlDfd = leoCodeOption.htmlDfd,
+                        cssDfd = leoCodeOption.cssDfd,
+                        jsDfd = leoCodeOption.jsDfd,
                         changeTimer,
                         $runCode = $('#runCode'),
                         isRunCode = true;
 
                     if (htmlDfd) {
                         htmlDfd.done(function(data) {
-                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            leoCodeOption.htmlBeautify && (data = html_beautify(data));
                             editorHtml.setValue(data);
                         });
                     }
 
                     if (cssDfd) {
                         cssDfd.done(function(data) {
-                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            leoCodeOption.cssBeautify && (data = css_beautify(data));
                             editorCss.setValue(data);
                         });
                     }
 
                     if (jsDfd) {
                         jsDfd.done(function(data) {
-                            LeoCodeOption.htmlBeautify && (data = html_beautify(data));
+                            leoCodeOption.jsBeautify && (data = js_beautify(data));
                             editorJs.setValue(data);
                         });
                     }
@@ -657,7 +655,7 @@ var leoCode = {
                     });
                 }
 
-                initCode(LeoCodeOption);
+                initCode(leoCodeOption);
             }.bind(this));
         }.bind(this));
     },
