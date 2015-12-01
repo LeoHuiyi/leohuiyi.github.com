@@ -32,8 +32,10 @@ header .logo {
     color: #fff;
 }
 
-header .btn-group {
+header .btn-groups {
     top: 7px;
+    right: 7px;
+    position: absolute;
 }
 
 section {
@@ -134,6 +136,9 @@ section nav .select .show {
 }
 
 #preview .btn-group {
+    position: absolute;
+    right: 7px;
+    top: 7px;
     z-index: 10;
 }
 
@@ -163,9 +168,6 @@ section nav .select .show {
 }
 
 .btn-group {
-    position: absolute;
-    top: 5px;
-    right: 7px;
     display: inline-block;
     vertical-align: middle;
 }
@@ -351,6 +353,11 @@ section nav .select .show {
 
 .dialog-Wrap.hide .dialog {
     transform: scale(0);
+}
+
+.leoCanvas{
+    pointer-events: auto !important;
+    z-index: 50 !important;
 }
 
 .loading {
