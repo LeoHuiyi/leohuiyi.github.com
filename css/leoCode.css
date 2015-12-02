@@ -123,6 +123,7 @@ section nav .select .show {
 #preview {
     background-color: #fff;
     box-shadow: none;
+    z-index: 9999;
 }
 
 #preview iframe {

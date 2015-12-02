@@ -50,7 +50,7 @@ var leoCode = {
         },
 
         htmlEncode: function(str) {
-            return $('<div/>').text(str).html()
+            return $('<div/>').text(str).html();
         },
 
         htmlDecode: function(str) {
@@ -59,6 +59,7 @@ var leoCode = {
 
         getCodeStr: function(op) {
             var option = $.extend({}, op),
+                index,
                 htmlStr = $.trim(option.html) || '',
                 cssStr = $.trim(option.css),
                 jsStr = $.trim(option.js);
@@ -131,7 +132,8 @@ var leoCode = {
                 printMargin: false,
                 leoSetFullScreen: true,
                 leoSetShowSettingsMenu: true,
-            }
+                leoBlastCode: true
+            };
 
             if (!ace || !op.id) {
                 return false;
@@ -170,7 +172,7 @@ var leoCode = {
                         i = 0;
 
                     defaultOpArr.forEach(function(prop) {
-                        if (typeof op[prop] !== 'undefind') {
+                        if (typeof op[prop] !== 'undefined') {
                             newOp[prop] = op[prop];
                             i++;
                             delete op[prop];
@@ -244,7 +246,7 @@ var leoCode = {
                         bindKey: "F11",
                         exec: function(editor) {
                             var fullScreen = dom.toggleCssClass(document.body, "fullScreen");
-                            dom.setCssClass(editor.container, "editor_fullScreen", fullScreen)
+                            dom.setCssClass(editor.container, "editor_fullScreen", fullScreen);
                             editor.setAutoScrollEditorIntoView(!fullScreen);
                             editor.resize();
                             leoSetFullScreen.exec && leoSetFullScreen.exec(editor, fullScreen);
@@ -324,7 +326,7 @@ var leoCode = {
                 return this.editor;
             },
 
-            setBlastCode: function(option) {
+            setBlastCode: function() {
                 function BlastCode(option) {
                     this.shakeTime = 0;
                     this.shakeTimeMax = 0;
@@ -346,13 +348,20 @@ var leoCode = {
                     this.winW = window.innerWidth;
                     this.winH = window.innerHeight;
 
-                    this.editor = option.editor;
-                    this.effect = option.effect || 2;
+                    var defaultOp = {
+                            effect: 2,
+                            shakeState: true,
+                            blastState: true
+                        },
+                        op = this.option = $.extend({}, defaultOp, option);
+
+                    this.editor = op.editor;
+                    this.effect = op.effect;
                     this.editorRenderer = this.editor.renderer;
                     this.editorContainer = this.editor.container;
                     this.$editorCanvas = $(this.editorRenderer.canvas);
-                    this.shakeState = true;
-                    this.blastState = true;
+                    this.shakeState = op.shakeState;
+                    this.blastState = op.blastState;
 
                     this.init();
                 }
@@ -361,9 +370,12 @@ var leoCode = {
                     init: function() {
                         this.initCanvas();
 
+                        var shakeChange = this.throttle(this.shake.bind(this), 100),
+                            blastChange = this.throttle(this.spawnParticles.bind(this), 100);
+
                         this.editor.getSession().on('change', function(e) {
-                            this.shakeChangeFn();
-                            this.blastChangeFn();
+                            this.shakeChangeFn(shakeChange);
+                            this.blastChangeFn(blastChange);
                         }.bind(this));
 
                         this.editor.on('focus', function(e) {
@@ -377,52 +389,54 @@ var leoCode = {
                         this.addEvent();
                     },
 
-                    shakeChangeFn: function(){
-                        if(this.shakeState){
-                            this.throttle(this.shake.bind(this), 100)(0.3);
+                    shakeChangeFn: function(shakeChange) {
+                        if (this.shakeState) {
+                            shakeChange(0.3);
                         }
                     },
 
-                    blastChangeFn: function(){
-                        if(this.blastState){
-                            this.throttle(this.spawnParticles.bind(this), 100)();
+                    blastChangeFn: function(blastChange) {
+                        if (this.blastState) {
+                            blastChange();
                         }
                     },
 
-                    editorFocus: function(){
-                        if(this.shakeState || this.blastState){
+                    editorFocus: function() {
+                        if (this.shakeState || this.blastState) {
                             this.startLoop();
                         }
                     },
 
-                    editorBlur: function(){
-                        if(this.shakeState || this.blastState){
+                    editorBlur: function() {
+                        if (this.shakeState || this.blastState) {
                             this.stopLoop();
                         }
                     },
 
-                    setShakeState: function(flag){
+                    setShakeState: function(flag) {
                         this.shakeState = !!flag;
 
-                        if(!this.shakeState && !this.blastState){
+                        if (!this.shakeState && !this.blastState) {
                             this.stopLoop();
                         }
                     },
 
-                    setBlastState: function(flag){
-                        console.log(flag);
-                        if(flag){
+                    setBlastState: function(flag) {
+                        if (flag) {
+                            this.canvas.style.display = 'block';
                             this.resize();
                             this.addEvent();
 
                             this.blastState = true;
-                        }else{
+                        } else {
+                            this.canvas.style.display = 'none';
                             this.resizeTimer && clearTimeout(this.resizeTimer);
                             $(window).off('.leoBlastCode');
+
                             this.blastState = false;
                         }
 
-                        if(!this.shakeState && !this.blastState){
+                        if (!this.shakeState && !this.blastState) {
                             this.stopLoop();
                         }
                     },
@@ -431,6 +445,7 @@ var leoCode = {
                         var canvas = this.canvas = document.createElement('canvas');
 
                         this.ctx = canvas.getContext('2d');
+                        !this.blastState && (canvas.style.display = 'none');
                         canvas.style.position = 'absolute';
                         canvas.style.top = 0;
                         canvas.style.left = 0;
@@ -487,6 +502,7 @@ var leoCode = {
                             this.spawnParticle(cursors[i]);
                         }
                         this.$editorCanvas.removeClass('leoCanvas');
+                        this.drawOver = false;
                     },
 
                     spawnParticle: function(cursor) {
@@ -559,24 +575,35 @@ var leoCode = {
                     },
 
                     drawParticles: function(timeDelta) {
-                        var particle, i = this.particles.length;
+                        var particle, particles = this.particles,
+                            i = particles.length,
+                            badLen = 0;
 
-                        if (i === 0 || this.drawI > 0) {
+                        if (i === 0 || this.drawI > 0 || this.drawOver) {
                             return;
                         }
 
-                        for (; i--;) {
-                            particle = this.particles[i];
+                        this.ctx.clearRect(0, 0, this.winW, this.winH);
+
+                        while (i--) {
+                            particle = particles[i];
                             this.drawI = i;
                             if (!particle || particle.alpha < 0.01 || particle.size <= 0.5) {
+                                badLen++;
                                 continue;
                             }
+
+                            badLen--;
 
                             if (this.effect === 1) {
                                 this.effect1(particle);
                             } else if (this.effect === 2) {
                                 this.effect2(particle);
                             }
+                        }
+
+                        if (badLen === particles.length) {
+                            this.drawOver = true;
                         }
                     },
 
@@ -589,7 +616,7 @@ var leoCode = {
                             max = min;
                             min = 0;
                         }
-                        return min + ~~(Math.random() * (max - min + 1))
+                        return min + ~~(Math.random() * (max - min + 1));
                     },
 
                     throttle: function(callback, limit) {
@@ -602,15 +629,15 @@ var leoCode = {
                                     wait = false;
                                 }, limit);
                             }
-                        }
+                        };
                     },
 
                     loop: function() {
-                        this.ctx.clearRect(0, 0, this.winW, this.winH);
-
-                        var current_time = new Date().getTime();
-                        if (!this.lastTime) last_time = current_time;
-                        var dt = (current_time - this.lastTime) / 1000;
+                        var current_time = new Date().getTime(), dt;
+                        if (!this.lastTime) {
+                            this.last_time = current_time;
+                        }
+                        dt = (current_time - this.lastTime) / 1000;
                         this.lastTime = current_time;
 
                         if (this.shakeTime > 0) {
@@ -623,7 +650,7 @@ var leoCode = {
                             this.reqContent && cancelAnimationFrame(this.reqContent);
                             this.reqContent = requestAnimationFrame(function() {
                                 this.editorContainer.style.transform = '';
-                            }.bind(this))
+                            }.bind(this));
                         }
 
                         this.drawParticles();
@@ -646,9 +673,13 @@ var leoCode = {
                     }
                 });
 
-                this.BlastCode = new BlastCode({
-                    editor: this.editor
-                });
+                if (this.options.leoBlastCode) {
+                    var leoBlastCode = $.extend({}, this.options.leoBlastCode, {
+                        editor: this.editor
+                    });
+
+                    this.BlastCode = new BlastCode(leoBlastCode);
+                }
 
                 return this;
             }
@@ -665,7 +696,7 @@ var leoCode = {
                 backdropClose: true,
                 onAfterInit: $.noop,
                 onBeforeShow: $.noop
-            }
+            };
 
             this.options = $.extend({}, defaultOp, options);
             this.init();
@@ -685,9 +716,8 @@ var leoCode = {
             },
             addEvent: function() {
                 var op = this.options,
-                    This = this;
-
-                $close = this.$target.find(op.closeSelector);
+                    This = this,
+                    $close = this.$target.find(op.closeSelector);
 
                 if ($close[0]) {
                     $close.on('click', function(event) {
@@ -731,14 +761,96 @@ var leoCode = {
         return Dialog;
     },
 
+    getButton: function() {
+        function Button(options) {
+            var defaultOp = {
+                btnSelector: '#leoBtn',
+                selectedClass: 'btn-select',
+                toggle: $.noop
+            };
+
+            this.options = $.extend({}, defaultOp, options);
+            this.init();
+
+            return this;
+        }
+
+        $.extend(Button.prototype, {
+            init: function() {
+                var op = this.options;
+
+                this.$target = $(op.btnSelector);
+                this.setInitState().addEvent();
+
+                return this;
+            },
+            setInitState: function() {
+                var op = this.options;
+
+                if (typeof op.state === 'undefined') {
+                    this.state = this.$target.hasClass(op.selectedClass);
+                } else {
+                    this.setState(!!op.state);
+                }
+
+                return this;
+            },
+            addEvent: function() {
+                this.$target.on('click', function(event) {
+                    event.preventDefault();
+
+                    this.toggle();
+                }.bind(this));
+
+                return this;
+            },
+            toggle: function(notSetClass) {
+                this.state = !this.state;
+
+                this.setState(this.state, notSetClass);
+                this.options.toggle(this.state);
+            },
+            setState: function(flag, notSetClass) {
+                if (flag) {
+                    !notSetClass && this.$target.addClass(this.options.selectedClass);
+                    this.state = true;
+                } else {
+                    !notSetClass && this.$target.removeClass(this.options.selectedClass);
+                    this.state = false;
+                }
+            },
+            fixState: function() {
+                if (this.state !== this.$target.hasClass(this.options.selectedClass)) {
+                    this.$target.addClass(this.options.selectedClass);
+
+                    return true;
+                }
+
+                return false;
+            },
+            getState: function() {
+                return this.state;
+            },
+            getBtn: function() {
+                return this.$target;
+            },
+            destroy: function() {
+                this.$target.remove();
+
+                return this;
+            }
+        });
+
+        return Button;
+    },
+
     editorAll: function(leoCodeOption) {
-        $(function() {
+        $(function($) {
             var $win = $(window),
                 $header = $('header'),
                 $editorWrapper = $('.editor_wrapper'),
                 $section = $('section'),
-                resizeTimer,
-                leoLoad = this.leoLoad;
+                resizeTimer;
 
             function resize() {
                 $editorWrapper.height($win.height() - $header.outerHeight() - parseFloat($section.css('paddingTop')) - parseFloat($section.css('paddingBottom')));
@@ -757,12 +869,52 @@ var leoCode = {
 
             resize();
 
-            leoLoad.loadAll(leoCodeOption.loadUrlArr).done(function() {
+            this.leoLoad.loadAll(leoCodeOption.loadUrlArr).done(function() {
                 var Editor = this.getEditor(),
                     Dialog = this.getDialog(),
-                    getCodeStr = this.utils.getCodeStr;
+                    Button = this.getButton(),
+                    getCodeStr = this.utils.getCodeStr,
+                    EditorHtml, editorHtml,
+                    EditorCss, editorCss,
+                    EditorJs, editorJs,
+                    runCodeBtn, runCodeTimer,
+                    blastBtn, shakeBtn,
+                    $previewIframe,
+                    $preview, $previewBtns, fullScreenBtn,
+                    leoDialog;
+
+                //blastBtn
+                blastBtn = new Button({
+                    btnSelector: '#blast',
+                    toggle: function(state) {
+                        setBlastCodeState('setBlastState', state);
+                    }
+                });
+
+                //shakeBtn
+                shakeBtn = new Button({
+                    btnSelector: '#shake',
+                    toggle: function(state) {
+                        setBlastCodeState('setShakeState', state);
+                    }
+                });
+
+                function setBlastCodeState(fn, flag) {
+                    if (EditorHtml && EditorHtml.BlastCode) {
+                        EditorHtml.BlastCode[fn](flag);
+                    }
+
+                    if (EditorCss && EditorCss.BlastCode) {
+                        EditorCss.BlastCode[fn](flag);
+                    }
+
+                    if (EditorJs && EditorJs.BlastCode) {
+                        EditorJs.BlastCode[fn](flag);
+                    }
+                }
+
                 // editorHtml
-                var EditorHtml = new Editor(ace, {
+                EditorHtml = new Editor(ace, {
                     id: 'editor_html',
                     mode: 'ace/mode/html',
                     leoSnipetArr: ['ace/snippets/javascript', 'ace/snippets/css'],
@@ -782,19 +934,23 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if(isFullScreen && isRunCode){
-                                isRunCode = false;
-                            }else if($runCode.hasClass('btn-select')){
-                                isRunCode = true;
+                            if (isFullScreen && runCodeBtn.getState()) {
+                                runCodeTimer && clearTimeout(runCodeTimer);
+                                runCodeBtn.setState(false, true);
+                            } else if (runCodeBtn.fixState()) {
                                 save();
                             }
                         }
+                    },
+                    leoBlastCode: {
+                        shakeState: shakeBtn.getState(),
+                        blastState: blastBtn.getState()
                     }
                 });
-                var editorHtml = EditorHtml.getEditor();
+                editorHtml = EditorHtml.getEditor();
 
                 // editorCss
-                var EditorCss = new Editor(ace, {
+                EditorCss = new Editor(ace, {
                     id: 'editor_css',
                     mode: 'ace/mode/css',
                     leoBeautify: {
@@ -813,28 +969,31 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if(isFullScreen && isRunCode){
-                                isRunCode = false;
-                            }else if($runCode.hasClass('btn-select')){
-                                isRunCode = true;
+                            if (isFullScreen && runCodeBtn.getState()) {
+                                runCodeTimer && clearTimeout(runCodeTimer);
+                                runCodeBtn.setState(false, true);
+                            } else if (runCodeBtn.fixState()) {
                                 save();
                             }
                         }
+                    },
+                    leoBlastCode: {
+                        shakeState: shakeBtn.getState(),
+                        blastState: blastBtn.getState()
                     }
                 });
-                var editorCss = EditorCss.getEditor();
+                editorCss = EditorCss.getEditor();
 
                 // editorJs
-                var EditorJs = new Editor(ace, {
+                EditorJs = new Editor(ace, {
                     id: 'editor_js',
                     mode: 'ace/mode/javascript',
                     leoBeautify: {
                         exec: function(editor) {
-                            if(isFullScreen && isRunCode){
-                                isRunCode = false;
-                            }else if($runCode.hasClass('btn-select')){
-                                isRunCode = true;
-                                save();
+                            var val = editor.getValue();
+
+                            if (val) {
+                                editor.setValue(js_beautify(val));
                             }
                         }
                     },
@@ -845,113 +1004,71 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if(isFullScreen && isRunCode){
-                                isRunCode = false;
-                            }else if($runCode.hasClass('btn-select')){
-                                isRunCode = true;
+                            if (isFullScreen && runCodeBtn.getState()) {
+                                runCodeTimer && clearTimeout(runCodeTimer);
+                                runCodeBtn.setState(false, true);
+                            } else if (runCodeBtn.fixState()) {
                                 save();
                             }
                         }
+                    },
+                    leoBlastCode: {
+                        shakeState: shakeBtn.getState(),
+                        blastState: blastBtn.getState()
                     }
                 });
-                var editorJs = EditorJs.getEditor();
+                editorJs = EditorJs.getEditor();
 
-                var changeTimer,
-                $runCode = $('#runCode'),
-                isRunCode = $runCode.hasClass('btn-select');
+                //runCodeBtn
+                runCodeBtn = new Button({
+                    btnSelector: '#runCode',
+                    toggle: function(state) {
+                        if (state) {
+                            save();
+                        } else {
+                            runCodeTimer && clearTimeout(runCodeTimer);
+                        }
+                    }
+                });
 
                 $win.on('editorChange', function() {
-                    changeTimer && clearTimeout(changeTimer);
+                    runCodeTimer && clearTimeout(runCodeTimer);
 
-                    changeTimer = setTimeout(function() {
+                    runCodeTimer = setTimeout(function() {
                         save();
-                        changeTimer = null;
+                        runCodeTimer = null;
                     }, 1500);
                 });
 
                 editorHtml.getSession().on('change', function(e) {
-                    isRunCode && $win.triggerHandler('editorChange');
+                    if (runCodeBtn.getState()) {
+                        $win.triggerHandler('editorChange');
+                    }
                 });
 
                 editorCss.getSession().on('change', function(e) {
-                    isRunCode && $win.triggerHandler('editorChange');
+                    if (runCodeBtn.getState()) {
+                        console.log(1111);
+                        $win.triggerHandler('editorChange');
+                    }
                 });
 
                 editorJs.getSession().on('change', function(e) {
-                    isRunCode && $win.triggerHandler('editorChange');
-                });
-
-                $runCode.on('click', function(event) {
-                    event.preventDefault();
-
-                    if (isRunCode) {
-                        changeTimer && clearTimeout(changeTimer);
-                        $runCode.removeClass('btn-select');
-                        isRunCode = false;
-                    } else {
-                        save();
-                        $runCode.addClass('btn-select');
-                        isRunCode = true;
+                    if (runCodeBtn.getState()) {
+                        $win.triggerHandler('editorChange');
                     }
                 });
 
-                function setBlastCodeState(fn, flag){
-                    if(EditorHtml && EditorHtml.BlastCode){
-                        EditorHtml.BlastCode[fn](flag);
-                    }
-
-                    if(EditorCss && EditorCss.BlastCode){
-                        EditorCss.BlastCode[fn](flag);
-                    }
-
-                    if(EditorJs && EditorJs.BlastCode){
-                        EditorJs.BlastCode[fn](flag);
-                    }
-                }
-
-                var $blast = $('#blast'),
-                isBlast = $blast.hasClass('btn-select');
-
-                $blast.on('click', function(event) {
-                    event.preventDefault();
-
-                    if (isBlast) {
-                        $blast.removeClass('btn-select');
-                        isBlast = false;
-                    } else {
-                        $blast.addClass('btn-select');
-                        isBlast = true;
-                    }
-
-                    setBlastCodeState('setBlastState', isBlast);
-                });
-
-                var $shake = $('#shake'),
-                isShake = $shake.hasClass('btn-select');
-
-                $shake.on('click', function(event) {
-                    event.preventDefault();
-
-                    if (isShake) {
-                        $shake.removeClass('btn-select');
-                        isShake = false;
-                    } else {
-                        $shake.addClass('btn-select');
-                        isShake = true;
-                    }
-
-                    setBlastCodeState('setShakeState', isShake);
-                });
-
+                //save
                 function getEditorHtml() {
                     return getCodeStr({
                         html: editorHtml && editorHtml.getValue(),
                         css: editorCss && editorCss.getValue(),
                         js: editorJs && editorJs.getValue(),
-                    })
+                    });
                 }
 
-                var $previewIframe = $('#preview-iframe');
+                $previewIframe = $('#preview-iframe');
 
                 function save(html) {
                     html = $.trim(html || getEditorHtml());
@@ -976,11 +1093,9 @@ var leoCode = {
                     iframeDoc.close();
                 }
 
-                var $previewBtns = $('#preview-btns');
-                var $preview = $('#preview');
-                var $fullscreen = $('#fullscreen');
-                var isFullScreen = false;
-
+                //preview
+                $previewBtns = $('#preview-btns');
+                $preview = $('#preview');
                 $preview.on('mouseenter', function(event) {
                     event.preventDefault();
 
@@ -991,17 +1106,14 @@ var leoCode = {
                     $previewBtns.hide();
                 });
 
-                $fullscreen.on('click', function(event) {
-                    event.preventDefault();
-
-                    if (!isFullScreen) {
-                        $preview.addClass('editor_fullScreen');
-                        $fullscreen.addClass('btn-select');
-                        isFullScreen = true;
-                    } else {
-                        $preview.removeClass('editor_fullScreen');
-                        $fullscreen.removeClass('btn-select');
-                        isFullScreen = false;
+                fullScreenBtn = new Button({
+                    btnSelector: '#fullscreen',
+                    toggle: function(state) {
+                        if (state) {
+                            $preview.addClass('editor_fullScreen');
+                        } else {
+                            $preview.removeClass('editor_fullScreen');
+                        }
                     }
                 });
 
@@ -1015,7 +1127,7 @@ var leoCode = {
                     newDoc.close();
                 });
 
-                var leoDialog = new Dialog({
+                leoDialog = new Dialog({
                     targetSelector: '#leoDialog',
                     onAfterInit: function() {
                         this.$target.find('#leoDialog-btn').on('click', function(event) {
@@ -1029,7 +1141,7 @@ var leoCode = {
                 $('#help').on('click', function(event) {
                     event.preventDefault();
 
-                    leoDialog.show()
+                    leoDialog.show();
                 });
 
                 $win.on('winResize', function(event) {
