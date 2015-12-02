@@ -33,9 +33,9 @@ header .logo {
 }
 
 header .btn-groups {
+    position: absolute;
     top: 7px;
     right: 7px;
-    position: absolute;
 }
 
 section {
@@ -121,9 +121,9 @@ section nav .select .show {
 }
 
 #preview {
+    z-index: 5000;
     background-color: #fff;
     box-shadow: none;
-    z-index: 9999;
 }
 
 #preview iframe {
@@ -138,9 +138,9 @@ section nav .select .show {
 
 #preview .btn-group {
     position: absolute;
-    right: 7px;
-    top: 7px;
     z-index: 10;
+    top: 7px;
+    right: 7px;
 }
 
 .editor_fullScreen {
@@ -219,14 +219,14 @@ section nav .select .show {
 }
 
 .btn.btn-select {
+    color: #fff;
     border-color: #2e6da4;
     background-color: #337ab7;
-    color: #fff;
 }
 
 .dialog-Wrap {
     position: fixed;
-    z-index: 1000;
+    z-index: 6000;
     top: 0! important;
     right: 0 !important;
     bottom: 0 !important;
@@ -356,9 +356,9 @@ section nav .select .show {
     transform: scale(0);
 }
 
-.leoCanvas{
-    pointer-events: auto !important;
+.leoCanvas {
     z-index: 50 !important;
+    pointer-events: auto !important;
 }
 
 .loading {
