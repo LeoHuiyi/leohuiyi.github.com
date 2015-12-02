@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>leo</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <script type="text/javascript" data-main="../demos/imagePlayer/imagePlayer" src="../../js/leoUiLoad.js"></script>
+	<style type="text/css">
+		ul,dl{
+		    list-style: outside none none;
+		}
+		#images .images_content{
+		    margin: 20px 0 0 24px;
+		    overflow: hidden;
+		}
+		#images .images_lists {
+		    width: 572px;
+		}
+		#images .images_lists li {
+		    float: left;
+		    padding: 0 43px 14px 0;
+		    width: 100px;
+		}
+		#images .images_lists .photo {
+		    cursor: default;
+		    height: 100px;
+		    margin: 0 auto;
+		    overflow: hidden;
+		    width: 100px;
+		}
+		#images .images_lists .photo img {
+		    display: block;
+		    height: 100px;
+		    vertical-align: bottom;
+		    width: 100px;
+		}
+		#images .images_lists dd {
+		    cursor: default;
+		    margin-top: 8px;
+		}
+		#images .images_lists dd .time {
+		    color: #b4b4b4;
+		    line-height: 20px;
+		    text-align: center;
+		}
+		#images .images_lists dd .list_edit {
+		    line-height: 20px;
+		    margin-top: 6px;
+		    visibility: hidden;
+		}
+		#images .images_lists dd .list_edit a {
+		    color: #0a8cd2;
+		}
+		#images .images_lists dd .list_edit a:hover {
+		    text-decoration: underline;
+		}
+		#images .images_pages {
+		    margin-left: 30px;
+		    padding-bottom: 20px;
+		}
+
+	</style>
+</head>
+
+<body style="padding:30px">
+<button id="reset">重置</button>
+<button id="add">添加</button>
+<button id="destroy">销毁</button>
+	<div id="images">
+	    <div class="images_content">
+	        <ul class="images_lists clearfix">
+	            <li class="list" id="1123">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/1.jpg" target="_blank"><img src="img/1.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1095">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/2.jpg" target="_blank"><img src="img/2.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1122">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/3.jpg" target="_blank"><img src="img/3.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1132">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/4.jpg" target="_blank"><img src="img/4.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1116">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/5.jpg" target="_blank"><img src="img/5.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1119">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/6.jpg" target="_blank"><img src="img/6.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1121">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/7.jpg" target="_blank"><img src="img/7.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1120">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/8.jpg" target="_blank"><img src="img/8.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1125">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/9.jpg" target="_blank"><img src="img/9.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1096">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/10.jpg" target="_blank"><img src="img/10.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1118">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/11.jpg" target="_blank"><img src="img/11.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1124">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/12.jpg" target="_blank"><img src="img/12.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1127">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/13.jpg" target="_blank"><img src="img/13.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1093">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/14.jpg" target="_blank"><img src="img/14.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	            <li class="list" id="1093">
+	                <dl>
+	                    <dt class="photo">
+	                        <a href="img/15.jpg" target="_blank"><img src="img/15.jpg">
+	                        </a>
+	                    </dt>
+	                </dl>
+	            </li>
+	        </ul>
+	    </div>
+    </div>
+
+</body>
+
+</html>

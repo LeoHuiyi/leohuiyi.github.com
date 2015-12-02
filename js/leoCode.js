@@ -1048,7 +1048,6 @@ var leoCode = {
 
                 editorCss.getSession().on('change', function(e) {
                     if (runCodeBtn.getState()) {
-                        console.log(1111);
                         $win.triggerHandler('editorChange');
                     }
                 });
@@ -1159,6 +1158,7 @@ var leoCode = {
                         htmlDfd.done(function(data) {
                             leoCodeOption.htmlBeautify && (data = html_beautify(data));
                             editorHtml.setValue(data);
+                            $win.triggerHandler('editorChange');
                         });
                     }
 
@@ -1166,6 +1166,7 @@ var leoCode = {
                         cssDfd.done(function(data) {
                             leoCodeOption.cssBeautify && (data = css_beautify(data));
                             editorCss.setValue(data);
+                            $win.triggerHandler('editorChange');
                         });
                     }
 
@@ -1173,10 +1174,9 @@ var leoCode = {
                         jsDfd.done(function(data) {
                             leoCodeOption.jsBeautify && (data = js_beautify(data));
                             editorJs.setValue(data);
+                            $win.triggerHandler('editorChange');
                         });
                     }
-
-                    save();
 
                     $('#leoLoading').css({
                         'opacity': 0,
