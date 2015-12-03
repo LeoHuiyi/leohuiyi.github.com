@@ -1234,7 +1234,7 @@ var leoCode = {
                         leoCodeOption.jsonpDfd.done(function() {
                             var html = window[leoCodeOption.jsonpHtml];
                             var css = window[leoCodeOption.jsonpCss];
-                            var js = window[leoCodeOption.jsonpCss];
+                            var js = window[leoCodeOption.jsonpJs];
                             if (typeof html === 'string') {
                                 leoCodeOption.htmlBeautify && (html = html_beautify(html));
                                 editorHtml.setValue(html);
