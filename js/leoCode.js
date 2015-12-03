@@ -92,13 +92,34 @@ var leoCode = {
         }
     },
 
-    ajaxData: function(url, jsonp) {
+    ajaxData: function(url) {
         return $.ajax({
             url: url,
             type: 'GET',
             dataType: 'text',
-            jsonp: jsonp
+            jsonp: true
         });
+    },
+
+    setJsonp: function(leoCodeOption) {
+        if (leoCodeOption.jsonp) {
+            var urlArr = [];
+            if (leoCodeOption.htmlUrl) {
+                urlArr.push(leoCodeOption.htmlUrl + '?leoCode_' + Math.random())
+            }
+
+            if (leoCodeOption.cssUrl) {
+                urlArr.push(leoCodeOption.cssUrl + '?leoCode_' + Math.random())
+            }
+
+            if (leoCodeOption.jsUrl) {
+                urlArr.push(leoCodeOption.jsUrl + '?leoCode_' + Math.random())
+            }
+
+            if (urlArr.length) {
+                return leoCode.leoLoad.loadAll(urlArr);
+            }
+        }
     },
 
     getLeoCodeOption: function() {
@@ -115,19 +136,24 @@ var leoCode = {
                 isRunCode: true,
                 isFullScreen: false,
                 isHelpShow: false,
-                jsonp: false
+                jsonp: true,
+                jsonpHtml: 'leoCodeHtml',
+                jsonpCss: 'leoCodeCss',
+                jsonpJs: 'leoCodeJs',
             }, op);
 
-        if (option.htmlUrl) {
-            option.htmlDfd = this.ajaxData(option.htmlUrl, option.jsonp);
-        }
+        if (!option.jsonp) {
+            if (option.htmlUrl) {
+                option.htmlDfd = this.ajaxData(option.htmlUrl);
+            }
 
-        if (option.cssUrl) {
-            option.cssDfd = this.ajaxData(option.cssUrl, option.jsonp);
-        }
+            if (option.cssUrl) {
+                option.cssDfd = this.ajaxData(option.cssUrl);
+            }
 
-        if (option.jsUrl) {
-            option.jsDfd = this.ajaxData(option.jsUrl, option.jsonp);
+            if (option.jsUrl) {
+                option.jsDfd = this.ajaxData(option.jsUrl);
+            }
         }
 
         return option;
@@ -406,7 +432,7 @@ var leoCode = {
                         this.addEvent();
                     },
 
-                    setRequestAnimationFrame: function(){
+                    setRequestAnimationFrame: function() {
                         var lastTime = 0;
                         var vendors = ['webkit', 'moz'];
                         for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -1244,6 +1270,12 @@ var leoCode = {
 
     init: function() {
         var op = this.getLeoCodeOption();
+
+        // $(function(){
+        //     this.setJsonp(op).done(function(){
+        //         console.log(htmlCode);
+        //     })
+        // }.bind(this))
 
         this[op.mode] && this[op.mode](op);
     }
