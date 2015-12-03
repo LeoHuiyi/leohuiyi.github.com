@@ -144,7 +144,7 @@ var leoCode = {
                 option._jsonpHtml = window[option.jsonpHtml];
                 option._jsonpCss = window[option.jsonpCss];
                 option._jsonpJs = window[option.jsonpJs];
-                option.jsonpDfd = leoCode.leoLoad.load(option.jsonp);
+                option.jsonpDfd = leoCode.leoLoad.load(option.jsonp + '?_leoCode_' + Math.random());
             });
         } else {
             if (option.htmlUrl) {
