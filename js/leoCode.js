@@ -112,7 +112,8 @@ var leoCode = {
                 isShake: true,
                 isBlast: true,
                 isRunCode: true,
-                isFullScreen: false
+                isFullScreen: false,
+                isHelpShow: false,
             }, op);
 
         if (option.htmlUrl) {
@@ -1197,6 +1198,10 @@ var leoCode = {
                             'opacity': 0,
                             'visibility': 'hidden'
                         });
+
+                        setTimeout(function(){
+                            leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
+                        }, 3000);
                     });
                 }
 
