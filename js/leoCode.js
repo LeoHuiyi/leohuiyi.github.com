@@ -463,7 +463,7 @@ var leoCode = {
                         canvas.style.position = 'absolute';
                         canvas.style.top = 0;
                         canvas.style.left = 0;
-                        canvas.style.zIndex = 1000;
+                        canvas.style.zIndex = 7000;
                         canvas.style.pointerEvents = 'none';
                         canvas.width = this.winW;
                         canvas.height = this.winH;
@@ -836,8 +836,10 @@ var leoCode = {
                 }
             },
             fixState: function() {
-                if (this.state !== this.$target.hasClass(this.options.selectedClass)) {
-                    this.$target.addClass(this.options.selectedClass);
+                var hasClass = this.$target.hasClass(this.options.selectedClass);
+
+                if (this.state !== hasClass) {
+                    this.state = hasClass;
 
                     return true;
                 }

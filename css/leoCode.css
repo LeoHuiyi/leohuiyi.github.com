@@ -145,7 +145,7 @@ section nav .select .show {
 
 .editor_fullScreen {
     position: fixed !important;
-    z-index: 10 !important;
+    z-index: 6000 !important;
     top: 0 !important;
     right: 0 !important;
     bottom: 0 !important;
@@ -226,7 +226,7 @@ section nav .select .show {
 
 .dialog-Wrap {
     position: fixed;
-    z-index: 6000;
+    z-index: 5500;
     top: 0! important;
     right: 0 !important;
     bottom: 0 !important;
