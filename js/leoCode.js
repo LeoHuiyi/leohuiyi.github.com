@@ -43,7 +43,13 @@ var leoCode = {
             var reg = /(?:([^&]+)=([^&]+))/g;
 
             while ((match = reg.exec(search)) !== null) {
-                args[match[1]] = match[2];
+                if (match[2] === 'true') {
+                    args[match[1]] = true;
+                } else if (match[2] === 'false') {
+                    args[match[1]] = false;
+                } else {
+                    args[match[1]] = match[2];
+                }
             }
 
             return args;
@@ -99,7 +105,14 @@ var leoCode = {
             op = utils.getUrlObj(),
             option = $.extend({
                 mode: 'editorAll', //editorAll, preview
-                loadUrlArr: ['js/lib/ace/ace.js', 'js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js']
+                loadUrlArr: ['js/lib/ace/ace.js', 'js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js'],
+                htmlDfd: '',
+                cssDfd: '',
+                jsDfd: '',
+                isShake: true,
+                isBlast: true,
+                isRunCode: true,
+                isFullScreen: false
             }, op);
 
         if (option.htmlUrl) {
@@ -633,7 +646,8 @@ var leoCode = {
                     },
 
                     loop: function() {
-                        var current_time = new Date().getTime(), dt;
+                        var current_time = new Date().getTime(),
+                            dt;
                         if (!this.lastTime) {
                             this.last_time = current_time;
                         }
@@ -808,15 +822,16 @@ var leoCode = {
                 this.state = !this.state;
 
                 this.setState(this.state, notSetClass);
-                this.options.toggle(this.state);
             },
             setState: function(flag, notSetClass) {
                 if (flag) {
                     !notSetClass && this.$target.addClass(this.options.selectedClass);
                     this.state = true;
+                    this.options.toggle(this.state);
                 } else {
                     !notSetClass && this.$target.removeClass(this.options.selectedClass);
                     this.state = false;
+                    this.options.toggle(this.state);
                 }
             },
             fixState: function() {
@@ -879,13 +894,16 @@ var leoCode = {
                     EditorJs, editorJs,
                     runCodeBtn, runCodeTimer,
                     blastBtn, shakeBtn,
-                    $previewIframe,
-                    $preview, $previewBtns, fullScreenBtn,
+                    $previewIframe = $('#preview-iframe'),
+                    $previewBtns = $('#preview-btns'),
+                    $preview = $('#preview'),
+                    fullScreenBtn,
                     leoDialog;
 
                 //blastBtn
                 blastBtn = new Button({
                     btnSelector: '#blast',
+                    state: !!leoCodeOption.isBlast,
                     toggle: function(state) {
                         setBlastCodeState('setBlastState', state);
                     }
@@ -894,6 +912,7 @@ var leoCode = {
                 //shakeBtn
                 shakeBtn = new Button({
                     btnSelector: '#shake',
+                    state: !!leoCodeOption.isShake,
                     toggle: function(state) {
                         setBlastCodeState('setShakeState', state);
                     }
@@ -1022,6 +1041,7 @@ var leoCode = {
                 //runCodeBtn
                 runCodeBtn = new Button({
                     btnSelector: '#runCode',
+                    state: !!leoCodeOption.isRunCode,
                     toggle: function(state) {
                         if (state) {
                             save();
@@ -1031,12 +1051,13 @@ var leoCode = {
                     }
                 });
 
-                $win.on('editorChange', function() {
+                $win.on('editorChange', function(e, fn) {
                     runCodeTimer && clearTimeout(runCodeTimer);
 
                     runCodeTimer = setTimeout(function() {
                         save();
                         runCodeTimer = null;
+                        fn && fn();
                     }, 1500);
                 });
 
@@ -1067,8 +1088,6 @@ var leoCode = {
                     });
                 }
 
-                $previewIframe = $('#preview-iframe');
-
                 function save(html) {
                     html = $.trim(html || getEditorHtml());
 
@@ -1093,8 +1112,6 @@ var leoCode = {
                 }
 
                 //preview
-                $previewBtns = $('#preview-btns');
-                $preview = $('#preview');
                 $preview.on('mouseenter', function(event) {
                     event.preventDefault();
 
@@ -1154,33 +1171,32 @@ var leoCode = {
                         cssDfd = leoCodeOption.cssDfd,
                         jsDfd = leoCodeOption.jsDfd;
 
-                    if (htmlDfd) {
-                        htmlDfd.done(function(data) {
-                            leoCodeOption.htmlBeautify && (data = html_beautify(data));
-                            editorHtml.setValue(data);
-                            $win.triggerHandler('editorChange');
-                        });
-                    }
+                    $.when(htmlDfd, cssDfd, jsDfd).done(function(html, css, js) {
+                        if (html && html[0]) {
+                            leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
+                            editorHtml.setValue(html[0]);
+                        }
 
-                    if (cssDfd) {
-                        cssDfd.done(function(data) {
-                            leoCodeOption.cssBeautify && (data = css_beautify(data));
-                            editorCss.setValue(data);
-                            $win.triggerHandler('editorChange');
-                        });
-                    }
+                        if (css && css[0]) {
+                            leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
+                            editorCss.setValue(css[0]);
+                        }
 
-                    if (jsDfd) {
-                        jsDfd.done(function(data) {
-                            leoCodeOption.jsBeautify && (data = js_beautify(data));
-                            editorJs.setValue(data);
-                            $win.triggerHandler('editorChange');
-                        });
-                    }
+                        if (js && js[0]) {
+                            leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
+                            editorJs.setValue(js[0]);
+                        }
 
-                    $('#leoLoading').css({
-                        'opacity': 0,
-                        'visibility': 'hidden'
+                        $win.triggerHandler('editorChange', function() {
+                            fullScreenBtn.setState(leoCodeOption.isFullScreen);
+                        });
+                    }).fail(function(data) {
+                        console.log(data);
+                    }).always(function() {
+                        $('#leoLoading').css({
+                            'opacity': 0,
+                            'visibility': 'hidden'
+                        });
                     });
                 }
 
@@ -1192,7 +1208,7 @@ var leoCode = {
     init: function() {
         var op = this.getLeoCodeOption();
 
-        this[op.mode] && this[op.mode](op)
+        this[op.mode] && this[op.mode](op);
     }
 };
 
