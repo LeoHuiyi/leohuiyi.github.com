@@ -92,11 +92,12 @@ var leoCode = {
         }
     },
 
-    ajaxData: function(url) {
+    ajaxData: function(url, jsonp) {
         return $.ajax({
             url: url,
             type: 'GET',
-            dataType: 'text'
+            dataType: 'text',
+            jsonp: jsonp
         });
     },
 
@@ -114,18 +115,19 @@ var leoCode = {
                 isRunCode: true,
                 isFullScreen: false,
                 isHelpShow: false,
+                jsonp: false
             }, op);
 
         if (option.htmlUrl) {
-            option.htmlDfd = this.ajaxData(option.htmlUrl);
+            option.htmlDfd = this.ajaxData(option.htmlUrl, option.jsonp);
         }
 
         if (option.cssUrl) {
-            option.cssDfd = this.ajaxData(option.cssUrl);
+            option.cssDfd = this.ajaxData(option.cssUrl, option.jsonp);
         }
 
         if (option.jsUrl) {
-            option.jsDfd = this.ajaxData(option.jsUrl);
+            option.jsDfd = this.ajaxData(option.jsUrl, option.jsonp);
         }
 
         return option;
@@ -382,6 +384,7 @@ var leoCode = {
 
                 $.extend(BlastCode.prototype, {
                     init: function() {
+                        this.setRequestAnimationFrame();
                         this.initCanvas();
 
                         var shakeChange = this.throttle(this.shake.bind(this), 100),
@@ -401,6 +404,33 @@ var leoCode = {
                         }.bind(this));
 
                         this.addEvent();
+                    },
+
+                    setRequestAnimationFrame: function(){
+                        var lastTime = 0;
+                        var vendors = ['webkit', 'moz'];
+                        for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                            window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                            window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || // Webkit中此取消方法的名字变了
+                            window[vendors[x] + 'CancelRequestAnimationFrame'];
+                        }
+
+                        if (!window.requestAnimationFrame) {
+                            window.requestAnimationFrame = function(callback, element) {
+                                var currTime = new Date().getTime();
+                                var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+                                var id = window.setTimeout(function() {
+                                    callback(currTime + timeToCall);
+                                }, timeToCall);
+                                lastTime = currTime + timeToCall;
+                                return id;
+                            };
+                        }
+                        if (!window.cancelAnimationFrame) {
+                            window.cancelAnimationFrame = function(id) {
+                                clearTimeout(id);
+                            };
+                        }
                     },
 
                     shakeChangeFn: function(shakeChange) {
@@ -1201,7 +1231,7 @@ var leoCode = {
                             'visibility': 'hidden'
                         });
 
-                        setTimeout(function(){
+                        setTimeout(function() {
                             leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
                         }, 3000);
                     });
