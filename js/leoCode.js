@@ -1,28 +1,46 @@
 var leoCode = {
     leoLoad: {
-        load: function(path, callback) {
-            var head = document.getElementsByTagName('head')[0];
-            var s = document.createElement('script');
+        load: function(path) {
+            var doc = document;
+            var head = doc.head || doc.getElementsByTagName("head")[0] || doc.documentElement;
+            var baseElement = head.getElementsByTagName("base")[0];
+            var s = doc.createElement('script');
+            var supportOnload = "onload" in s;
+            var reload = /loaded|complete/;
             var dfd = $.Deferred();
 
             s.src = path;
             s.async = true;
-            head.appendChild(s);
+            baseElement ? head.insertBefore(s, baseElement) : head.appendChild(s);
 
-            s.onload = s.onreadystatechange = function(_, isAbort) {
-                s.parentNode.removeChild(s);
-                if (isAbort || !s.readyState || s.readyState == "loaded" || s.readyState == "complete") {
-                    s = s.onload = s.onreadystatechange = null;
-                    if (!isAbort) {
-                        dfd.resolve();
-                        callback && callback();
-                    } else {
-                        dfd.reject();
+            if (supportOnload) {
+                s.onload = function() {
+                    onload();
+                };
+                s.onerror = function() {
+                    onload(true);
+                };
+            } else {
+                s.onreadystatechange = function() {
+                    if (reload.test(s.readyState)) {
+                        onload();
                     }
+                };
+            }
+
+            function onload(error) {
+                s.onload = s.onerror = s.onreadystatechange = null;
+
+                head.removeChild(s);
+
+                s = null;
+
+                if (error) {
+                    dfd.reject('error:url = ' + path);
                 } else {
-                    dfd.reject();
+                    dfd.resolve();
                 }
-            };
+            }
 
             return dfd;
         },
@@ -101,27 +119,6 @@ var leoCode = {
         });
     },
 
-    setJsonp: function(leoCodeOption) {
-        if (leoCodeOption.jsonp) {
-            var urlArr = [];
-            if (leoCodeOption.htmlUrl) {
-                urlArr.push(leoCodeOption.htmlUrl + '?leoCode_' + Math.random())
-            }
-
-            if (leoCodeOption.cssUrl) {
-                urlArr.push(leoCodeOption.cssUrl + '?leoCode_' + Math.random())
-            }
-
-            if (leoCodeOption.jsUrl) {
-                urlArr.push(leoCodeOption.jsUrl + '?leoCode_' + Math.random())
-            }
-
-            if (urlArr.length) {
-                return leoCode.leoLoad.loadAll(urlArr);
-            }
-        }
-    },
-
     getLeoCodeOption: function() {
         var utils = this.utils,
             op = utils.getUrlObj(),
@@ -136,13 +133,20 @@ var leoCode = {
                 isRunCode: true,
                 isFullScreen: false,
                 isHelpShow: false,
-                jsonp: true,
+                jsonp: false,
                 jsonpHtml: 'leoCodeHtml',
                 jsonpCss: 'leoCodeCss',
                 jsonpJs: 'leoCodeJs',
             }, op);
 
-        if (!option.jsonp) {
+        if (typeof option.jsonp === 'string') {
+            $(function() {
+                option._jsonpHtml = window[option.jsonpHtml];
+                option._jsonpCss = window[option.jsonpCss];
+                option._jsonpJs = window[option.jsonpJs];
+                option.jsonpDfd = leoCode.leoLoad.load(option.jsonp);
+            });
+        } else {
             if (option.htmlUrl) {
                 option.htmlDfd = this.ajaxData(option.htmlUrl);
             }
@@ -1226,56 +1230,92 @@ var leoCode = {
                 });
 
                 function initCode(leoCodeOption) {
-                    var htmlDfd = leoCodeOption.htmlDfd,
-                        cssDfd = leoCodeOption.cssDfd,
-                        jsDfd = leoCodeOption.jsDfd;
+                    if (leoCodeOption.jsonpDfd) {
+                        leoCodeOption.jsonpDfd.done(function() {
+                            var html = window[leoCodeOption.jsonpHtml];
+                            var css = window[leoCodeOption.jsonpCss];
+                            var js = window[leoCodeOption.jsonpCss];
+                            if (typeof html === 'string') {
+                                leoCodeOption.htmlBeautify && (html = html_beautify(html));
+                                editorHtml.setValue(html);
+                            }
 
-                    $.when(htmlDfd, cssDfd, jsDfd).done(function(html, css, js) {
-                        if (html && html[0]) {
-                            leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
-                            editorHtml.setValue(html[0]);
-                        }
+                            if (typeof css === 'string') {
+                                leoCodeOption.cssBeautify && (css = css_beautify(css));
+                                editorCss.setValue(css);
+                            }
 
-                        if (css && css[0]) {
-                            leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
-                            editorCss.setValue(css[0]);
-                        }
+                            if (typeof js === 'string') {
+                                leoCodeOption.jsBeautify && (js = js_beautify(js));
+                                editorJs.setValue(js);
+                            }
 
-                        if (js && js[0]) {
-                            leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
-                            editorJs.setValue(js[0]);
-                        }
+                            $win.triggerHandler('editorChange', function() {
+                                fullScreenBtn.setState(leoCodeOption.isFullScreen);
+                            });
+                        }).fail(function(data) {
+                            console.log(data);
+                        }).always(function() {
+                            $('#leoLoading').css({
+                                'opacity': 0,
+                                'visibility': 'hidden'
+                            });
 
-                        $win.triggerHandler('editorChange', function() {
-                            fullScreenBtn.setState(leoCodeOption.isFullScreen);
+                            setTimeout(function() {
+                                leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
+                            }, 3000);
+
+                            window[leoCodeOption.jsonpHtml] = leoCodeOption._jsonpHtml;
+                            window[leoCodeOption.jsonpCss] = leoCodeOption._jsonpCss;
+                            window[leoCodeOption.jsonpJs] = leoCodeOption._jsonpJs;
+                            delete leoCodeOption._jsonpHtml;
+                            delete leoCodeOption._jsonpCss;
+                            delete leoCodeOption._jsonpJs;
                         });
-                    }).fail(function(data) {
-                        console.log(data);
-                    }).always(function() {
-                        $('#leoLoading').css({
-                            'opacity': 0,
-                            'visibility': 'hidden'
-                        });
+                    } else {
+                        $.when(leoCodeOption.htmlDfd, leoCodeOption.cssDfd, leoCodeOption.jsDfd).done(function(html, css, js) {
+                            if (html && html[0]) {
+                                leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
+                                editorHtml.setValue(html[0]);
+                            }
 
-                        setTimeout(function() {
-                            leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
-                        }, 3000);
-                    });
+                            if (css && css[0]) {
+                                leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
+                                editorCss.setValue(css[0]);
+                            }
+
+                            if (js && js[0]) {
+                                leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
+                                editorJs.setValue(js[0]);
+                            }
+
+                            $win.triggerHandler('editorChange', function() {
+                                fullScreenBtn.setState(leoCodeOption.isFullScreen);
+                            });
+                        }).fail(function(data) {
+                            console.log(data);
+                        }).always(function() {
+                            $('#leoLoading').css({
+                                'opacity': 0,
+                                'visibility': 'hidden'
+                            });
+
+                            setTimeout(function() {
+                                leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
+                            }, 3000);
+                        });
+                    }
                 }
 
                 initCode(leoCodeOption);
-            }.bind(this));
+            }.bind(this)).fail(function(data) {
+                console.log(data);
+            });
         }.bind(this));
     },
 
     init: function() {
         var op = this.getLeoCodeOption();
-
-        // $(function(){
-        //     this.setJsonp(op).done(function(){
-        //         console.log(htmlCode);
-        //     })
-        // }.bind(this))
 
         this[op.mode] && this[op.mode](op);
     }
