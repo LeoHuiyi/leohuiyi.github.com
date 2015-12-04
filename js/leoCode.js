@@ -110,7 +110,7 @@ var leoCode = {
         },
 
         requestAnimationFrameFix: function() {
-            if (leoCode.isRequestAnimationFrameFix) {
+            if (leoCode.utils.isRequestAnimationFrameFix) {
                 return;
             }
 
@@ -139,40 +139,49 @@ var leoCode = {
                 };
             }
 
-            leoCode.isRequestAnimationFrameFix = true;
+            leoCode.utils.isRequestAnimationFrameFix = true;
         },
 
-        getTransitionEndName: function() {
-            if (leoCode.isGetTransitionEndName) {
-                return;
-            }
+        getVendorPropertyName: function(prop, style) {
+            !style && (style = document.createElement('div').style);
 
-            var transitionEndEvent = {
-                    WebkitTransition: 'webkitTransitionEnd',
-                    MozTransition: 'transitionend',
-                    OTransition: 'oTransitionEnd otransitionend',
-                    transition: 'transitionend'
-                },
-                style = document.createElement('div').style,
-                name;
+            if (prop in style) return prop;
 
-            for (name in transitionEndEvent) {
-                if (style[name] !== undefined) {
-                    leoCode.transitionEndName = transitionEndEvent[name];
-                    leoCode.isGetTransitionEndName = true;
+            var prefixes = ['Moz', 'Webkit', 'O', 'ms'],
+                i = 0,
+                vendorProp,
+                len = prefixes.length,
+                prop_ = prop.charAt(0).toUpperCase() + prop.substr(1);
 
-                    return;
+            for (; i < len; ++i) {
+                vendorProp = prefixes[i] + prop_;
+                if (vendorProp in style) {
+                    return vendorProp;
                 }
             }
+        },
 
-            leoCode.isGetTransitionEndName = true;
+        getCss3VendorName: function() {
+            var utils = leoCode.utils,
+                eventNames = {
+                    'transition': 'transitionend',
+                    'MozTransition': 'transitionend',
+                    'OTransition': 'oTransitionEnd',
+                    'WebkitTransition': 'webkitTransitionEnd',
+                    'msTransition': 'MSTransitionEnd'
+                },
+                div = document.createElement('div'),
+                style = div.style,
+                transition = utils.getVendorPropertyName('transition', style);
+
+            utils.transformName = utils.getVendorPropertyName('transform', style);
+            utils.transitionEndName = eventNames[transition];
+            div = null;
         },
 
         transitionEndFn: function(node, fn) {
-            leoCode.utils.getTransitionEndName();
-
-            if (node && leoCode.transitionEndName) {
-                $(node).one(leoCode.transitionEndName, fn);
+            if (node && leoCode.utils.transitionEndName) {
+                $(node).one(leoCode.utils.transitionEndName, fn);
             }
         }
     },
@@ -437,6 +446,8 @@ var leoCode = {
             },
 
             setBlastCode: function() {
+                var transformName = leoCode.utils.transformName;
+
                 function BlastCode(option) {
                     this.shakeTime = 0;
                     this.shakeTimeMax = 0;
@@ -525,10 +536,12 @@ var leoCode = {
                     },
 
                     setShakeState: function(flag) {
-                        this.shakeState = !!flag;
-
-                        if (!this.shakeState && !this.blastState) {
-                            this.stopLoop();
+                        if (flag) {
+                            this.shakeState = true;
+                        } else {
+                            !this.blastState && this.stopLoop();
+                            this.editorContainer.style[transformName] = '';
+                            this.shakeState = false;
                         }
                     },
 
@@ -537,18 +550,13 @@ var leoCode = {
                             this.canvas.style.display = 'block';
                             this.resize();
                             this.addEvent();
-
                             this.blastState = true;
                         } else {
+                            !this.shakeState && this.stopLoop();
                             this.canvas.style.display = 'none';
                             this.resizeTimer && clearTimeout(this.resizeTimer);
                             $(window).off('.leoBlastCode');
-
                             this.blastState = false;
-                        }
-
-                        if (!this.shakeState && !this.blastState) {
-                            this.stopLoop();
                         }
                     },
 
@@ -569,12 +577,13 @@ var leoCode = {
                     },
 
                     resize: function() {
-                        this.stopLoop();
+                        var isReqAF = !!this.reqAF;
+                        isReqAF && this.stopLoop();
                         this.winW = window.innerWidth;
                         this.winH = window.innerHeight;
                         this.canvas.width = this.winW;
                         this.canvas.height = this.winH;
-                        this.startLoop();
+                        isReqAF && this.startLoop();
                     },
 
                     addEvent: function() {
@@ -757,12 +766,11 @@ var leoCode = {
                             var magnitude = (this.shakeTime / this.shakeTimeMax) * this.shakeIntensity;
                             var shakeX = this.random(-magnitude, magnitude);
                             var shakeY = this.random(-magnitude, magnitude);
-                            this.editorContainer.style.transform = 'translate(' + shakeX + 'px,' + shakeY + 'px)';
-
-                            this.reqContent && cancelAnimationFrame(this.reqContent);
-                            this.reqContent = requestAnimationFrame(function() {
-                                this.editorContainer.style.transform = '';
-                            }.bind(this));
+                            this.editorContainer.style[transformName] = 'translate(' + shakeX + 'px,' + shakeY + 'px)';
+                            this.clearTransform = true;
+                        }else if(this.clearTransform){
+                            this.editorContainer.style[transformName] = '';
+                            this.clearTransform = false;
                         }
 
                         this.drawParticles();
@@ -778,10 +786,12 @@ var leoCode = {
                     },
 
                     stopLoop: function() {
-                        this.reqAF && cancelAnimationFrame(this.reqAF);
-                        this.ctx.clearRect(0, 0, this.winW, this.winH);
-                        this.particles = [];
-                        this.reqAF = null;
+                        if (this.reqAF) {
+                            cancelAnimationFrame(this.reqAF);
+                            this.ctx.clearRect(0, 0, this.winW, this.winH);
+                            this.particles = [];
+                            this.reqAF = null;
+                        }
                     }
                 });
 
@@ -1367,6 +1377,7 @@ var leoCode = {
     init: function() {
         var op = this.getLeoCodeOption();
 
+        this.utils.getCss3VendorName();
         this[op.mode] && this[op.mode](op);
     }
 };
