@@ -368,8 +368,8 @@ var leoCode = {
                             dom.setCssClass(editor.container, "editor_fullScreen", fullScreen);
                             editor.setAutoScrollEditorIntoView(!fullScreen);
                             editor.resize();
-                            leoSetFullScreen.exec && leoSetFullScreen.exec(editor, fullScreen);
-                        }
+                            leoSetFullScreen.exec && leoSetFullScreen.exec.call(this, editor, fullScreen);
+                        }.bind(this)
                     });
                 }
 
@@ -389,8 +389,8 @@ var leoCode = {
                             mac: "Command-f"
                         },
                         exec: function(editor) {
-                            leoBeautify.exec && leoBeautify.exec(editor);
-                        }
+                            leoBeautify.exec && leoBeautify.exec.call(this, editor);
+                        }.bind(this)
                     }]);
                 }
 
@@ -410,8 +410,8 @@ var leoCode = {
                             mac: "Command-s"
                         },
                         exec: function(editor) {
-                            leoSaveCode.exec && leoSaveCode.exec(editor);
-                        }
+                            leoSaveCode.exec && leoSaveCode.exec.call(this, editor);
+                        }.bind(this)
                     }]);
                 }
 
@@ -483,6 +483,8 @@ var leoCode = {
                     this.$editorCanvas = $(this.editorRenderer.canvas);
                     this.shakeState = op.shakeState;
                     this.blastState = op.blastState;
+                    this.shakeIsLoop = false;
+                    this.blastIsLoop = false;
 
                     this.init();
                 }
@@ -500,14 +502,6 @@ var leoCode = {
                             this.blastChangeFn(blastChange);
                         }.bind(this));
 
-                        this.editor.on('focus', function(e) {
-                            this.editorFocus();
-                        }.bind(this));
-
-                        this.editor.on('blur', function(e) {
-                            this.editorBlur();
-                        }.bind(this));
-
                         this.addEvent();
                     },
 
@@ -520,18 +514,6 @@ var leoCode = {
                     blastChangeFn: function(blastChange) {
                         if (this.blastState) {
                             blastChange();
-                        }
-                    },
-
-                    editorFocus: function() {
-                        if (this.shakeState || this.blastState) {
-                            this.startLoop();
-                        }
-                    },
-
-                    editorBlur: function() {
-                        if (this.shakeState || this.blastState) {
-                            this.stopLoop();
                         }
                     },
 
@@ -577,13 +559,11 @@ var leoCode = {
                     },
 
                     resize: function() {
-                        var isReqAF = !!this.reqAF;
-                        isReqAF && this.stopLoop();
+                        this.stopLoop();
                         this.winW = window.innerWidth;
                         this.winH = window.innerHeight;
                         this.canvas.width = this.winW;
                         this.canvas.height = this.winH;
-                        isReqAF && this.startLoop();
                     },
 
                     addEvent: function() {
@@ -617,10 +597,13 @@ var leoCode = {
                             cursors = this.editorRenderer.$cursorLayer.cursors,
                             len = cursors.length;
 
+                        this.startLoop('blastIsLoop');
                         this.$editorCanvas.addClass('leoCanvas');
+
                         for (; i < len; i++) {
                             this.spawnParticle(cursors[i]);
                         }
+
                         this.$editorCanvas.removeClass('leoCanvas');
                         this.drawOver = false;
                     },
@@ -708,6 +691,7 @@ var leoCode = {
                         while (i--) {
                             particle = particles[i];
                             this.drawI = i;
+
                             if (!particle || particle.alpha < 0.01 || particle.size <= 0.5) {
                                 badLen++;
                                 continue;
@@ -723,12 +707,14 @@ var leoCode = {
                         }
 
                         if (badLen === particles.length) {
+                            this.setStopLoop('blastIsLoop');
                             this.drawOver = true;
                         }
                     },
 
                     shake: function(time) {
                         this.shakeTime = this.shakeTimeMax = time;
+                        this.startLoop('shakeIsLoop');
                     },
 
                     random: function(min, max) {
@@ -756,10 +742,14 @@ var leoCode = {
                         var current_time = new Date().getTime(),
                             dt;
                         if (!this.lastTime) {
-                            this.last_time = current_time;
+                            this.lastTime = current_time;
                         }
                         dt = (current_time - this.lastTime) / 1000;
                         this.lastTime = current_time;
+
+                        this.reqAF = requestAnimationFrame(function() {
+                            this.loop();
+                        }.bind(this));
 
                         if (this.shakeTime > 0) {
                             this.shakeTime -= dt;
@@ -768,18 +758,26 @@ var leoCode = {
                             var shakeY = this.random(-magnitude, magnitude);
                             this.editorContainer.style[transformName] = 'translate(' + shakeX + 'px,' + shakeY + 'px)';
                             this.clearTransform = true;
-                        }else if(this.clearTransform){
+                        } else if (this.clearTransform) {
                             this.editorContainer.style[transformName] = '';
                             this.clearTransform = false;
+                            this.setStopLoop('shakeIsLoop');
                         }
 
                         this.drawParticles();
-                        this.reqAF = requestAnimationFrame(function() {
-                            this.loop();
-                        }.bind(this));
                     },
 
-                    startLoop: function() {
+                    setStopLoop: function(name) {
+                        name && (this[name] = false);
+
+                        if (!this.shakeIsLoop && !this.blastIsLoop) {
+                            this.stopLoop();
+                        }
+                    },
+
+                    startLoop: function(name) {
+                        name && (this[name] = true);
+
                         if (!this.reqAF) {
                             this.loop();
                         }
@@ -791,6 +789,7 @@ var leoCode = {
                             this.ctx.clearRect(0, 0, this.winW, this.winH);
                             this.particles = [];
                             this.reqAF = null;
+                            this.lastTime = 0;
                         }
                     }
                 });
