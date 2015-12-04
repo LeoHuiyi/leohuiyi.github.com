@@ -226,7 +226,7 @@ section nav .select .show {
 
 .dialog-Wrap {
     position: fixed;
-    z-index: 5500;
+    z-index: 10000;
     top: 0! important;
     right: 0 !important;
     bottom: 0 !important;
