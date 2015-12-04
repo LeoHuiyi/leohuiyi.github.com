@@ -143,7 +143,7 @@ var leoCode = {
         },
 
         getTransitionEndName: function() {
-            if(leoCode.isGetTransitionEndName){
+            if (leoCode.isGetTransitionEndName) {
                 return;
             }
 
@@ -1053,11 +1053,15 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if (isFullScreen && runCodeBtn.getState()) {
-                                runCodeTimer && clearTimeout(runCodeTimer);
-                                runCodeBtn.setState(false, true);
-                            } else if (runCodeBtn.fixState()) {
-                                save();
+                            if (isFullScreen) {
+                                $preview.hide();
+                                if (runCodeBtn.getState) {
+                                    runCodeTimer && clearTimeout(runCodeTimer);
+                                    runCodeBtn.setState(false, true);
+                                }
+                            } else {
+                                $preview.show();
+                                runCodeBtn.fixState() && save();
                             }
                         }
                     },
@@ -1088,11 +1092,15 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if (isFullScreen && runCodeBtn.getState()) {
-                                runCodeTimer && clearTimeout(runCodeTimer);
-                                runCodeBtn.setState(false, true);
-                            } else if (runCodeBtn.fixState()) {
-                                save();
+                            if (isFullScreen) {
+                                $preview.hide();
+                                if (runCodeBtn.getState) {
+                                    runCodeTimer && clearTimeout(runCodeTimer);
+                                    runCodeBtn.setState(false, true);
+                                }
+                            } else {
+                                $preview.show();
+                                runCodeBtn.fixState() && save();
                             }
                         }
                     },
@@ -1123,11 +1131,15 @@ var leoCode = {
                     },
                     leoSetFullScreen: {
                         exec: function(editor, isFullScreen) {
-                            if (isFullScreen && runCodeBtn.getState()) {
-                                runCodeTimer && clearTimeout(runCodeTimer);
-                                runCodeBtn.setState(false, true);
-                            } else if (runCodeBtn.fixState()) {
-                                save();
+                            if (isFullScreen) {
+                                $preview.hide();
+                                if (runCodeBtn.getState) {
+                                    runCodeTimer && clearTimeout(runCodeTimer);
+                                    runCodeBtn.setState(false, true);
+                                }
+                            } else {
+                                $preview.show();
+                                runCodeBtn.fixState() && save();
                             }
                         }
                     },
@@ -1298,7 +1310,7 @@ var leoCode = {
                             leoCode.utils.transitionEndFn($leoLoading.css({
                                 'opacity': 0,
                                 'visibility': 'hidden'
-                            }), function(event){
+                            }), function(event) {
                                 $leoLoading.remove();
                             });
 
@@ -1334,7 +1346,7 @@ var leoCode = {
                             leoCode.utils.transitionEndFn($leoLoading.css({
                                 'opacity': 0,
                                 'visibility': 'hidden'
-                            }), function(event){
+                            }), function(event) {
                                 $leoLoading.remove();
                             });
 
