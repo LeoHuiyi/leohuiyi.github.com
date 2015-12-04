@@ -912,7 +912,7 @@ var leoCode = {
                 if (typeof op.state === 'undefined') {
                     this.state = this.$target.hasClass(op.selectedClass);
                 } else {
-                    this.setState(!!op.state);
+                    this.setState(!!op.state, false, true);
                 }
 
                 return this;
@@ -931,15 +931,15 @@ var leoCode = {
 
                 this.setState(this.state, notSetClass);
             },
-            setState: function(flag, notSetClass) {
+            setState: function(flag, notSetClass, init) {
                 if (flag) {
                     !notSetClass && this.$target.addClass(this.options.selectedClass);
                     this.state = true;
-                    this.options.toggle(this.state);
+                    !init && this.options.toggle(this.state);
                 } else {
                     !notSetClass && this.$target.removeClass(this.options.selectedClass);
                     this.state = false;
-                    this.options.toggle(this.state);
+                    !init && this.options.toggle(this.state);
                 }
             },
             fixState: function() {
@@ -1007,6 +1007,7 @@ var leoCode = {
                     $previewIframe = $('#preview-iframe'),
                     $previewBtns = $('#preview-btns'),
                     $preview = $('#preview'),
+                    $refresh = $('#refresh'),
                     fullScreenBtn,
                     leoDialog;
 
@@ -1211,6 +1212,7 @@ var leoCode = {
                 }
 
                 function save(html) {
+                    runCodeTimer && clearTimeout(runCodeTimer);
                     html = $.trim(html || getEditorHtml());
 
                     var $oldIframe = $previewIframe.find('iframe');
@@ -1253,6 +1255,12 @@ var leoCode = {
                             $preview.removeClass('editor_fullScreen');
                         }
                     }
+                });
+
+                $refresh.on('click', function(event) {
+                    event.preventDefault();
+
+                    save();
                 });
 
                 $('#new-preview').on('click', function(event) {
