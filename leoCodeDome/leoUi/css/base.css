@@ -15,9 +15,9 @@ a:hover{text-decoration:none;}
 .padding-none{padding:0 !Important;}
 .margin-none{margin:0 !Important;}
 .border-none{border-width:0 !Important;}
-label.error{display:inline-block;margin:0 5px;padding:0 0 0 20px;background: url(../Images/error.png) no-repeat 0px center;color: red;}
+label.error{display:inline-block;margin:0 5px;padding:0 0 0 20px;background: url(./leoCodeDome/leoUi/img/error.png) no-repeat 0px center;color: red;}
 input.error{border: dashed 1px red;}
-label.valid{display:inline-block;margin:0 5px;width:16px;height:16px;background: url(../Images/valid.png) no-repeat 0px center;}
+label.valid{display:inline-block;margin:0 5px;width:16px;height:16px;background: url(./leoCodeDome/leoUi/img/valid.png) no-repeat 0px center;}
 label.normal{display:none;}
 label.focus{display:inline-block;margin:0 5px;color:#999999;}
 .clearfix:before, .clearfix:after {content:"";display:table;}

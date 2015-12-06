@@ -49,7 +49,7 @@
     border-radius: 0;
     border-right: medium none;
     border-top: medium none;
-    background: url("../img/leoUi-bg_highlight-soft_100_c0c0c0_1x100.png") repeat-x scroll center top #C0C0C0;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_c0c0c0_1x100.png") repeat-x scroll center top #C0C0C0;
     position: relative;
     overflow: hidden;
     cursor: move;
@@ -82,19 +82,19 @@
 }
 
 .leoDialog_titlebar_button:hover {
-    background: url("../img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83B0CA;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83B0CA;
     box-shadow: 0 0 3px #85B2CB;
     border: 1px solid #8AB0C6;
     padding: 0;
 }
 
 .leoDialog_titlebar_button:hover span {
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
 }
 
 .leoDialog_titlebar_button_span {
     margin: 1px;
-    background-image: url("../img/leoUi-icons_898989_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_898989_256x240.png");
     text-indent: -9999px;
     height: 16px;
     width: 16px;
@@ -159,7 +159,7 @@
 
 .leoDialog_content .icon {
     vertical-align: middle;
-    background: url("../img/ico_warn.png") no-repeat scroll -50px -204px;
+    background: url("./leoCodeDome/leoUi/img/ico_warn.png") no-repeat scroll -50px -204px;
     display: inline-block;
     height: 25px;
     width: 25px;
@@ -167,7 +167,7 @@
 
 .leoDialog_content .iconOk {
     vertical-align: middle;
-    background: url("../img/ico_warn.png") no-repeat scroll -50px -3px;
+    background: url("./leoCodeDome/leoUi/img/ico_warn.png") no-repeat scroll -50px -3px;
     display: inline-block;
     height: 25px;
     width: 25px;
@@ -175,7 +175,7 @@
 
 .leoDialog_content .iconNo {
     vertical-align: middle;
-    background: url("../img/ico_warn.png") no-repeat scroll -50px -53px;
+    background: url("./leoCodeDome/leoUi/img/ico_warn.png") no-repeat scroll -50px -53px;
     display: inline-block;
     height: 25px;
     width: 25px;
@@ -373,7 +373,7 @@
 }
 
 .leoTree_icon_triangle {
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
     cursor: pointer;
 }
 
@@ -386,7 +386,7 @@
 }
 
 .leoTree_icon_folder {
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
 }
 
 .leoTree_inner_open .leoTree_icon_folder {
@@ -398,7 +398,7 @@
 }
 
 .leoTree_icon_document {
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
     background-position: -32px -96px;
 }
 
@@ -469,7 +469,7 @@
 }
 
 .leoTree_inner_hover {
-    background: url("../img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83b0ca;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83b0ca;
     border: 1px solid #8ab0c6;
     box-shadow: 0 0 3px #85b2cb;
     color: #313131;
@@ -496,7 +496,7 @@
 }
 
 .leoTree_loading {
-    background: url("../img/indicator.gif") no-repeat scroll 8px center #fff;
+    background: url("./leoCodeDome/leoUi/img/indicator.gif") no-repeat scroll 8px center #fff;
     border: 2px solid #aaa;
     display: none;
     font-size: 14px;
@@ -535,13 +535,13 @@
 }
 
 .leoTree_checkbox .leoTree_checkbox_hover {
-    background: url("../img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83b0ca;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83b0ca;
 }
 
 .leoTree_checkbox .leoTree_checkbox_icon {
     float: left;
     border-radius: 3px;
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
     text-indent: -9999px;
     height: 16px;
     width: 16px;
@@ -591,7 +591,7 @@
 }
 
 .leoSelect .leoSelect_tit_icon {
-    background: url("../img/leoComboBox_button.png") no-repeat center;
+    background: url("./leoCodeDome/leoUi/img/leoComboBox_button.png") no-repeat center;
     border-left: 1px solid #dbdbdb;
     display: block;
     height: 100%;
@@ -725,7 +725,7 @@
 }
 
 .leoComboBox_wrop .leoComboBox_button {
-    background: url("../img/leoComboBox_button.png") no-repeat center;
+    background: url("./leoCodeDome/leoUi/img/leoComboBox_button.png") no-repeat center;
     height: 100%;
     width: 16px;
     float: right;
@@ -843,7 +843,7 @@
 }
 
 .leoUiScrollbar .leoUiScrollbar-state-default .leoUiScrollbar-icon {
-    background-image: url(../img/ui-icons_38667f_256x240.png);
+    background-image: url(./leoCodeDome/leoUi/img/ui-icons_38667f_256x240.png);
     width: 16px;
     height: 16px;
     display: block;
@@ -857,7 +857,7 @@
 
 .leoUiScrollbar .leoUiScrollbar-hbar-buttontop {
     top: 0;
-    background: url(../img/scroller-up-arrow.png) no-repeat top;
+    background: url(./leoCodeDome/leoUi/img/scroller-up-arrow.png) no-repeat top;
     height: 25px;
     border: none;
     -moz-box-shadow: none;
@@ -872,7 +872,7 @@
 
 .leoUiScrollbar .leoUiScrollbar-hbar-buttonbottom {
     bottom: 0;
-    background: url(../img/scroller-down-arrow.png) no-repeat bottom;
+    background: url(./leoCodeDome/leoUi/img/scroller-down-arrow.png) no-repeat bottom;
     height: 25px;
     border: none;
     -moz-box-shadow: none;
@@ -891,7 +891,7 @@
 
 .leoUiScrollbar .leoUiScrollbar-hbar-buttonleft {
     left: 0;
-    background: url(../img/scroller-left-arrow.png) no-repeat left;
+    background: url(./leoCodeDome/leoUi/img/scroller-left-arrow.png) no-repeat left;
     width: 25px;
     border: none;
     -moz-box-shadow: none;
@@ -906,7 +906,7 @@
 
 .leoUiScrollbar .leoUiScrollbar-hbar-buttonright {
     bottom: 0;
-    background: url(../img/scroller-right-arrow.png) no-repeat right;
+    background: url(./leoCodeDome/leoUi/img/scroller-right-arrow.png) no-repeat right;
     width: 25px;
     border: none;
     -moz-box-shadow: none;
@@ -924,7 +924,7 @@
 }
 
 .leoUiScrollbar .leoUiScrollbar-handle {
-    background: url(../img/scrollbar-vertical.png) repeat-y left;
+    background: url(./leoCodeDome/leoUi/img/scrollbar-vertical.png) repeat-y left;
     -moz-border-radius: 12px;
     -webkit-border-radius: 12px;
     border-radius: 12px;
@@ -1111,7 +1111,7 @@
 
 .leoDatetimepicker .leoDatetimepicker-header {
     position: relative;
-    background: url("../img/leoUi-bg_highlight-soft_100_c0c0c0_1x100.png") repeat-x scroll center top #c0c0c0;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_c0c0c0_1x100.png") repeat-x scroll center top #c0c0c0;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
     border-radius: 3px;
     border: 1px solid #a8a8a8;
@@ -1136,7 +1136,7 @@
 }
 
 .leoDatetimepicker .leoDatetimepicker-header .leoDatetimepicker-icon {
-    background-image: url("../img/leoUi-icons_898989_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_898989_256x240.png");
     text-indent: -9999px;
     height: 16px;
     width: 16px;
@@ -1160,7 +1160,7 @@
 }
 
 .leoDatetimepicker .leoDatetimepicker-header-button:hover {
-    background: url("../img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83B0CA;
+    background: url("./leoCodeDome/leoUi/img/leoUi-bg_highlight-soft_100_83b0ca_1x100.png") repeat-x scroll center top #83B0CA;
     box-shadow: 0px 0px 3px #85B2CB;
     border: 1px solid #8AB0C6;
     color: #313131;
@@ -1169,7 +1169,7 @@
 }
 
 .leoDatetimepicker .leoDatetimepicker-header-button:hover span {
-    background-image: url("../img/leoUi-icons_38667f_256x240.png") !important;
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png") !important;
 }
 
 .leoDatetimepicker .leoDatetimepicker-header-nextYears {
@@ -1280,7 +1280,7 @@
     position: relative;
     top: 2px;
     width: 12px;
-    background-image: url("../img/leoUi-icons_38667f_256x240.png");
+    background-image: url("./leoCodeDome/leoUi/img/leoUi-icons_38667f_256x240.png");
     text-indent: -9999px;
     color: #4f4f4f;
     background-position: -48px -16px;
@@ -1811,7 +1811,7 @@
     top: 8px;
     width: 12px;
     z-index: 12;
-    background: url("../img/tab_close.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    background: url("./leoCodeDome/leoUi/img/tab_close.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
 }
 
 .leoTabs .leoTabs_nav .leoTabs_nav_close:hover {
@@ -1972,7 +1972,7 @@
 }
 
 .leoTabs .leoTabs_menu_yline {
-    background: url('../img/menu-line-y.gif') repeat-y;
+    background: url('./leoCodeDome/leoUi/img/menu-line-y.gif') repeat-y;
     width: 2px;
     height: 2000px;
     position: absolute;
@@ -1988,12 +1988,12 @@
     z-index: 102;
     height: 22px;
     overflow: hidden;
-    background: url('../img/menu-item-over-m.gif') repeat-x;
+    background: url('./leoCodeDome/leoUi/img/menu-item-over-m.gif') repeat-x;
     width: 97%;
 }
 
 .leoTabs .leoTabs_menu_over_l {
-    background: url('../img/menu-item-over-l.gif') no-repeat;
+    background: url('./leoCodeDome/leoUi/img/menu-item-over-l.gif') no-repeat;
     width: 28px;
     height: 22px;
     position: absolute;
@@ -2002,7 +2002,7 @@
 }
 
 .leoTabs .leoTabs_menu_over_r {
-    background: url('../img/menu-item-over-r.gif') no-repeat;
+    background: url('./leoCodeDome/leoUi/img/menu-item-over-r.gif') no-repeat;
     width: 3px;
     height: 22px;
     position: absolute;
