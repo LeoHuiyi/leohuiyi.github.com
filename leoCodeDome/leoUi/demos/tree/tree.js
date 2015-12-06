@@ -161,6 +161,8 @@ leoUiLoad.require('leoUi-tree,base,leoUi,ready', function($) {
 
         autoCollapse:false,
 
+        arrowSrc: './leoCodeDome/leoUi/img/arrow.png',
+
         key:{
 
             children:'children',
