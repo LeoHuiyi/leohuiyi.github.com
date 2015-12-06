@@ -747,7 +747,7 @@ var leoCode = {
                         dt = (current_time - this.lastTime) / 1000;
                         this.lastTime = current_time;
 
-                        this.reqAF = requestAnimationFrame(function() {
+                        this.reqAF = window.requestAnimationFrame(function() {
                             this.loop();
                         }.bind(this));
 
@@ -785,7 +785,7 @@ var leoCode = {
 
                     stopLoop: function() {
                         if (this.reqAF) {
-                            cancelAnimationFrame(this.reqAF);
+                            window.cancelAnimationFrame(this.reqAF);
                             this.ctx.clearRect(0, 0, this.winW, this.winH);
                             this.particles = [];
                             this.reqAF = null;
@@ -994,7 +994,11 @@ var leoCode = {
             resize();
 
             this.leoLoad.loadAll(leoCodeOption.loadUrlArr).done(function() {
-                var Editor = this.getEditor(),
+                var ace = window.ace,
+                    html_beautify = window.html_beautify,
+                    css_beautify = window.css_beautify,
+                    js_beautify = window.js_beautify,
+                    Editor = this.getEditor(),
                     Dialog = this.getDialog(),
                     Button = this.getButton(),
                     getCodeStr = this.utils.getCodeStr,
@@ -1047,7 +1051,7 @@ var leoCode = {
                     id: 'editor_html',
                     mode: 'ace/mode/html',
                     leoSnipetArr: ['ace/snippets/javascript', 'ace/snippets/css'],
-                    leoBeautify: {
+                    leoBeautify: html_beautify ? {
                         exec: function(editor) {
                             var val = editor.getValue();
 
@@ -1055,7 +1059,7 @@ var leoCode = {
                                 editor.setValue(html_beautify(val));
                             }
                         }
-                    },
+                    } : false,
                     leoSaveCode: {
                         exec: function(editor) {
                             save();
@@ -1086,7 +1090,7 @@ var leoCode = {
                 EditorCss = new Editor(ace, {
                     id: 'editor_css',
                     mode: 'ace/mode/css',
-                    leoBeautify: {
+                    leoBeautify: css_beautify ? {
                         exec: function(editor) {
                             var val = editor.getValue();
 
@@ -1094,7 +1098,7 @@ var leoCode = {
                                 editor.setValue(css_beautify(val));
                             }
                         }
-                    },
+                    } : false,
                     leoSaveCode: {
                         exec: function(editor) {
                             save();
@@ -1125,7 +1129,7 @@ var leoCode = {
                 EditorJs = new Editor(ace, {
                     id: 'editor_js',
                     mode: 'ace/mode/javascript',
-                    leoBeautify: {
+                    leoBeautify: js_beautify ? {
                         exec: function(editor) {
                             var val = editor.getValue();
 
@@ -1133,7 +1137,7 @@ var leoCode = {
                                 editor.setValue(js_beautify(val));
                             }
                         }
-                    },
+                    } : false,
                     leoSaveCode: {
                         exec: function(editor) {
                             save();
@@ -1302,17 +1306,17 @@ var leoCode = {
                             var css = window[leoCodeOption.jsonpCss];
                             var js = window[leoCodeOption.jsonpJs];
                             if (typeof html === 'string') {
-                                leoCodeOption.htmlBeautify && (html = html_beautify(html));
+                                html_beautify && leoCodeOption.htmlBeautify && (html = html_beautify(html));
                                 editorHtml.setValue(html);
                             }
 
                             if (typeof css === 'string') {
-                                leoCodeOption.cssBeautify && (css = css_beautify(css));
+                                css_beautify && leoCodeOption.cssBeautify && (css = css_beautify(css));
                                 editorCss.setValue(css);
                             }
 
                             if (typeof js === 'string') {
-                                leoCodeOption.jsBeautify && (js = js_beautify(js));
+                                js_beautify && leoCodeOption.jsBeautify && (js = js_beautify(js));
                                 editorJs.setValue(js);
                             }
 
@@ -1338,17 +1342,17 @@ var leoCode = {
                     } else {
                         $.when(leoCodeOption.htmlDfd, leoCodeOption.cssDfd, leoCodeOption.jsDfd).done(function(html, css, js) {
                             if (html && html[0]) {
-                                leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
+                                html_beautify && leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
                                 editorHtml.setValue(html[0]);
                             }
 
                             if (css && css[0]) {
-                                leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
+                                css_beautify && leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
                                 editorCss.setValue(css[0]);
                             }
 
                             if (js && js[0]) {
-                                leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
+                                js_beautify && leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
                                 editorJs.setValue(js[0]);
                             }
 
