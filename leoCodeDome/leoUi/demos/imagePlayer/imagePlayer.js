@@ -1,11 +1,10 @@
-
 leoUiLoad.config({
 
     debug: false,
 
-    baseUrl:'leoUi/',
+    baseUrl: 'leoUi/',
 
-    alias : {
+    alias: {
 
         base: '../../css/base.css',
 
@@ -54,4 +53,3 @@ leoUiLoad.require('leoUi-imagePlayer,leoUi, ready', function($) {
         $('.images_lists').append('<li class="list" id="1123"><dl><dt class="photo"><a href="###"><img src="img/16.jpg"></a></dt></dl></li>');
     });
 });
-

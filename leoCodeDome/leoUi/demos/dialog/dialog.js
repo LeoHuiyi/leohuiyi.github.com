@@ -42,15 +42,15 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         captionButtons: ['close'],
 
-        titlebarDblclickMax:false,
+        titlebarDblclickMax: false,
 
-        title:'A',
+        title: 'A',
 
         height: 190,
 
-        showDelay:1000,
+        showDelay: 1000,
 
-        hideDelay:1000,
+        hideDelay: 1000,
 
         resizableOption: {
 
@@ -58,11 +58,11 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             stopMouseWheel: true,
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
-        isMoveToTop:true,
+        isMoveToTop: true,
 
         draggableOption: {
 
@@ -70,7 +70,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             stopMouseWheel: false,
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
@@ -80,25 +80,25 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         restore: true,
 
-        dialogFocus:function(target){
+        dialogFocus: function(target) {
 
             $(target).find('input').focus();
 
         },
 
-        beforeShow:function(target){
+        beforeShow: function(target) {
 
             mask.option('zIndex', $(target).css('zIndex')).show();
 
         },
 
-        hideCallBack:function(){
+        hideCallBack: function() {
 
             mask.hide();
 
         },
 
-        destroyCallBack:function(){
+        destroyCallBack: function() {
 
             mask.destroy();
 
@@ -112,7 +112,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         contentHtml: '<div id="delete_image">' + '<div class="send_content clearfix">' + '<div class="text">' + '<span class="icon"></span>' + '<span class="title">标题内容</span>' + '</div>' + '<div class="send_bottom clearfix">' + '<input class="send_submit" type="submit" value="改变按钮" name="submit" />' + '<input class="send_off" type="submit" value="取消" name="submit" />' + '</div>' + '</div>' + '</div>',
 
-        title:'cDialog',
+        title: 'cDialog',
 
         captionButtons: ['maximize', 'close', 'minimize', 'pin'],
 
@@ -126,11 +126,11 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             stopMouseWheel: true,
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
-        isMoveToTop:true,
+        isMoveToTop: true,
 
         draggableOption: {
 
@@ -138,7 +138,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             stopMouseWheel: false,
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
@@ -150,7 +150,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         modal: false,
 
-        dialogFocus:function(target){
+        dialogFocus: function(target) {
 
             $(target).find('input').focus();
 
@@ -166,9 +166,9 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         contentHtml: '<iframe style="width:50%;height:100%;position:relative;z-index:998" frameborder="0" src="http://www.w3school.com.cn/"></iframe><iframe style="width:50%;height:100%;position:relative;z-index:999" frameborder="0" src="http://www.bootcss.com/"></iframe>',
 
-        title:'B',
+        title: 'B',
 
-        isMoveToTop:true,
+        isMoveToTop: true,
 
         width: 600,
 
@@ -178,11 +178,15 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         showAnimation: function(callBack) {
 
-            this.show( { effect: "clip", duration: "slow", complete: callBack } );
+            this.show({
+                effect: "clip",
+                duration: "slow",
+                complete: callBack
+            });
 
         },
 
-        titlebarDblclickMax:false,
+        titlebarDblclickMax: false,
 
         hideAnimation: function(callBack) {
 
@@ -194,7 +198,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             containment: 'parent',
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
@@ -202,7 +206,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
             containment: 'parent',
 
-            iframeFix:true
+            iframeFix: true
 
         },
 
@@ -210,7 +214,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         restore: false,
 
-        dialogFocus:function(target){
+        dialogFocus: function(target) {
 
             $(target).find('iframe').focus();
 
@@ -256,7 +260,10 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         a.option('okCallBack', function(event, disabled, enable) {
 
-            b.option({'captionButtons': [], titlebarDblclickMax:true});
+            b.option({
+                'captionButtons': [],
+                titlebarDblclickMax: true
+            });
 
             a.option('captionButtons', ['close', 'toggle', 'pin']);
             // a.option('draggableOption.stopMouseWheel', true)
@@ -289,7 +296,7 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
         a.option('cancelCallBack', function(event, disabled, enable) {
 
             // a.option('disable', true);
-           a.option('okButtonClassName', '.send_off');
+            a.option('okButtonClassName', '.send_off');
 
         });
 
@@ -306,9 +313,9 @@ leoUiLoad.require('leoUi-dialog,leoUi-mask,base,leoUi,ready', function($) {
 
         cDialog.show();
 
-        b.option('disabled',flag)
+        b.option('disabled', flag)
 
-        a.option('disabled',flag)
+        a.option('disabled', flag)
 
         // a.destroy();
 
