@@ -109,37 +109,44 @@ var leoCode = {
             return htmlStr;
         },
 
-        requestAnimationFrameFix: function() {
-            if (leoCode.utils.isRequestAnimationFrameFix) {
-                return;
+        requestAnimationFrameFns: function() {
+            var requestAnimationFrameFns = {};
+
+            if (window.requestAnimationFrame && window.cancelAnimationFrame) {
+                requestAnimationFrameFns.requestAnimationFrame = window.requestAnimationFrame;
+                requestAnimationFrameFns.cancelAnimationFrame = window.cancelAnimationFrame;
+            } else {
+                var lastTime = 0;
+                var vendors = ['webkit', 'moz'];
+                for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                    requestAnimationFrameFns.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+                    requestAnimationFrameFns.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || // Webkit中此取消方法的名字变了
+                    requestAnimationFrameFns[vendors[x] + 'CancelRequestAnimationFrame'];
+                }
+
+                if (!requestAnimationFrameFns.requestAnimationFrame) {
+                    requestAnimationFrameFns.requestAnimationFrame = function(callback) {
+                        var currTime = new Date().getTime();
+                        var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
+                        var id = window.setTimeout(function() {
+                            callback(currTime + timeToCall);
+                        }, timeToCall);
+                        lastTime = currTime + timeToCall;
+                        return id;
+                    };
+                }
+                if (!requestAnimationFrameFns.cancelAnimationFrame) {
+                    requestAnimationFrameFns.cancelAnimationFrame = function(id) {
+                        clearTimeout(id);
+                    };
+                }
             }
 
-            var lastTime = 0;
-            var vendors = ['webkit', 'moz'];
-            for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-                window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-                window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || // Webkit中此取消方法的名字变了
-                window[vendors[x] + 'CancelRequestAnimationFrame'];
-            }
+            leoCode.utils.requestAnimationFrameFns = function(){
+                return requestAnimationFrameFns;
+            };
 
-            if (!window.requestAnimationFrame) {
-                window.requestAnimationFrame = function(callback, element) {
-                    var currTime = new Date().getTime();
-                    var timeToCall = Math.max(0, 16.7 - (currTime - lastTime));
-                    var id = window.setTimeout(function() {
-                        callback(currTime + timeToCall);
-                    }, timeToCall);
-                    lastTime = currTime + timeToCall;
-                    return id;
-                };
-            }
-            if (!window.cancelAnimationFrame) {
-                window.cancelAnimationFrame = function(id) {
-                    clearTimeout(id);
-                };
-            }
-
-            leoCode.utils.isRequestAnimationFrameFix = true;
+            return requestAnimationFrameFns;
         },
 
         getVendorPropertyName: function(prop, style) {
@@ -161,8 +168,9 @@ var leoCode = {
             }
         },
 
-        getCss3VendorName: function() {
+        css3Names: function() {
             var utils = leoCode.utils,
+                css3Names = {},
                 eventNames = {
                     'transition': 'transitionend',
                     'MozTransition': 'transitionend',
@@ -174,14 +182,22 @@ var leoCode = {
                 style = div.style,
                 transition = utils.getVendorPropertyName('transition', style);
 
-            utils.transformName = utils.getVendorPropertyName('transform', style);
-            utils.transitionEndName = eventNames[transition];
+            css3Names.transformName = utils.getVendorPropertyName('transform', style);
+            css3Names.transitionEndName = eventNames[transition];
             div = null;
+
+            utils.css3Names = function(){
+                return css3Names;
+            };
+
+            return css3Names;
         },
 
         transitionEndFn: function(node, fn) {
-            if (node && leoCode.utils.transitionEndName) {
-                $(node).one(leoCode.utils.transitionEndName, fn);
+            var transitionEndName = leoCode.utils.css3Names().transitionEndName;
+
+            if (node && transitionEndName) {
+                $(node).one(transitionEndName, fn);
             }
         }
     },
@@ -446,7 +462,10 @@ var leoCode = {
             },
 
             setBlastCode: function() {
-                var transformName = leoCode.utils.transformName;
+                var transformName = leoCode.utils.css3Names().transformName,
+                    requestAnimationFrameFns = leoCode.utils.requestAnimationFrameFns(),
+                    requestAnimationFrame = requestAnimationFrameFns.requestAnimationFrame,
+                    cancelAnimationFrame = requestAnimationFrameFns.cancelAnimationFrame;
 
                 function BlastCode(option) {
                     this.shakeTime = 0;
@@ -491,7 +510,6 @@ var leoCode = {
 
                 $.extend(BlastCode.prototype, {
                     init: function() {
-                        leoCode.utils.requestAnimationFrameFix();
                         this.initCanvas();
 
                         var shakeChange = this.throttle(this.shake.bind(this), 100),
@@ -747,7 +765,7 @@ var leoCode = {
                         dt = (current_time - this.lastTime) / 1000;
                         this.lastTime = current_time;
 
-                        this.reqAF = window.requestAnimationFrame(function() {
+                        this.reqAF = requestAnimationFrame(function() {
                             this.loop();
                         }.bind(this));
 
@@ -785,7 +803,7 @@ var leoCode = {
 
                     stopLoop: function() {
                         if (this.reqAF) {
-                            window.cancelAnimationFrame(this.reqAF);
+                            cancelAnimationFrame(this.reqAF);
                             this.ctx.clearRect(0, 0, this.winW, this.winH);
                             this.particles = [];
                             this.reqAF = null;
@@ -1388,7 +1406,6 @@ var leoCode = {
     init: function() {
         var op = this.getLeoCodeOption();
 
-        this.utils.getCss3VendorName();
         this[op.mode] && this[op.mode](op);
     }
 };
