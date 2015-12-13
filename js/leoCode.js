@@ -91,9 +91,9 @@ var leoCode = {
             if (jsStr) {
                 index = htmlStr.indexOf('</body>');
                 if (index > -1) {
-                    htmlStr = htmlStr.slice(0, index) + '<script>try{' + jsStr + '}catch(e){}</script>' + htmlStr.slice(index);
+                    htmlStr = htmlStr.slice(0, index) + '<script>' + jsStr + '</script>' + htmlStr.slice(index);
                 } else {
-                    htmlStr += '<script>try{' + jsStr + '}catch(e){}</script>';
+                    htmlStr += '<script>' + jsStr + '</script>';
                 }
             }
 
@@ -287,6 +287,7 @@ var leoCode = {
                 this.setLanguageTools().setEmmet().setSnippet().setFullScreen().setShowSettingsMenu().setBeautifyCode().setSaveCode().setBlastCode();
                 editor.setOptions(this._getEditorOp());
                 editor.getSession().setUseWrapMode(true);
+                editor.$blockScrolling = Infinity;
 
                 return this;
             },
