@@ -121,7 +121,7 @@ var leoCode = {
                 for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
                     requestAnimationFrameFns.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
                     requestAnimationFrameFns.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || // Webkit中此取消方法的名字变了
-                    requestAnimationFrameFns[vendors[x] + 'CancelRequestAnimationFrame'];
+                        requestAnimationFrameFns[vendors[x] + 'CancelRequestAnimationFrame'];
                 }
 
                 if (!requestAnimationFrameFns.requestAnimationFrame) {
@@ -142,7 +142,7 @@ var leoCode = {
                 }
             }
 
-            leoCode.utils.requestAnimationFrameFns = function(){
+            leoCode.utils.requestAnimationFrameFns = function() {
                 return requestAnimationFrameFns;
             };
 
@@ -186,7 +186,7 @@ var leoCode = {
             css3Names.transitionEndName = eventNames[transition];
             div = null;
 
-            utils.css3Names = function(){
+            utils.css3Names = function() {
                 return css3Names;
             };
 
@@ -202,50 +202,58 @@ var leoCode = {
         }
     },
 
-    ajaxData: function(url) {
-        return $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'text',
-            jsonp: true
-        });
-    },
-
     getLeoCodeOption: function() {
         var utils = this.utils,
             op = utils.getUrlObj(),
             option = $.extend({
                 mode: 'editorAll', //editorAll, preview
                 loadUrlArr: ['js/lib/ace/ace.js', 'js/lib/js-beautify/beautify-html.js', 'js/lib/js-beautify/beautify-css.js', 'js/lib/js-beautify/beautify.js'],
-                htmlDfd: '',
-                cssDfd: '',
-                jsDfd: '',
                 isShake: true,
                 isBlast: true,
                 isRunCode: true,
                 isFullScreen: false,
                 isHelpShow: false,
-                jsonp: false,
-                jsonpHtml: 'leoCodeHtml',
-                jsonpCss: 'leoCodeCss',
-                jsonpJs: 'leoCodeJs',
+                htmlUrl: false,
+                cssUrl: false,
+                jsUrl: false,
+                jsonpUrl: false,
+                jsonpCallback: 'leoCode',
+                htmlDfd: false,
+                cssDfd: false,
+                jsDfd: false,
+                jsonpDfd: false
             }, op);
 
-        if (typeof option.jsonp === 'string') {
-            $(function() {
-                option.jsonpDfd = leoCode.leoLoad.load(option.jsonp + '?_leoCode_' + Math.random());
+        if (typeof option.jsonpUrl === 'string') {
+            option.jsonpDfd = $.ajax({
+                url: option.jsonpUrl,
+                dataType: 'jsonp',
+                crossDomain: true,
+                jsonpCallback: option.jsonpCallback
             });
         } else {
-            if (option.htmlUrl) {
-                option.htmlDfd = this.ajaxData(option.htmlUrl);
+            if (typeof option.htmlUrl === 'string') {
+                option.htmlDfd = $.ajax({
+                    url: option.htmlUrl,
+                    type: 'GET',
+                    dataType: 'text'
+                });
             }
 
-            if (option.cssUrl) {
-                option.cssDfd = this.ajaxData(option.cssUrl);
+            if (typeof option.cssUrl === 'string') {
+                option.cssDfd = $.ajax({
+                    url: option.cssUrl,
+                    type: 'GET',
+                    dataType: 'text'
+                });
             }
 
-            if (option.jsUrl) {
-                option.jsDfd = this.ajaxData(option.jsUrl);
+            if (typeof option.jsUrl === 'string') {
+                option.jsDfd = $.ajax({
+                    url: option.jsUrl,
+                    type: 'GET',
+                    dataType: 'text'
+                });
             }
         }
 
@@ -1319,11 +1327,14 @@ var leoCode = {
                 });
 
                 function initCode(leoCodeOption) {
-                    if (leoCodeOption.jsonpDfd) {
-                        leoCodeOption.jsonpDfd.done(function() {
-                            var html = window[leoCodeOption.jsonpHtml];
-                            var css = window[leoCodeOption.jsonpCss];
-                            var js = window[leoCodeOption.jsonpJs];
+                    $.when(leoCodeOption.jsonpDfd, leoCodeOption.htmlDfd, leoCodeOption.cssDfd, leoCodeOption.jsDfd).done(function(jsonpArr, htmlArr, cssArr, jsArr) {
+                        var jsonp, html, css, js;
+                        if (jsonpArr && jsonpArr[0]) {
+                            jsonp = jsonpArr[0];
+                            html = jsonp.html;
+                            css = jsonp.css;
+                            js = jsonp.js;
+
                             if (typeof html === 'string') {
                                 html_beautify && leoCodeOption.htmlBeautify && (html = html_beautify(html));
                                 editorHtml.setValue(html);
@@ -1338,63 +1349,48 @@ var leoCode = {
                                 js_beautify && leoCodeOption.jsBeautify && (js = js_beautify(js));
                                 editorJs.setValue(js);
                             }
+                        } else {
+                            if (htmlArr && htmlArr[0]) {
+                                html = htmlArr[0];
 
-                            $win.triggerHandler('editorChange', function() {
-                                fullScreenBtn.setState(leoCodeOption.isFullScreen);
-                            });
-                        }).fail(function(data) {
-                            console.log(data);
-                        }).always(function() {
-                            var $leoLoading = $('#leoLoading');
+                                html_beautify && leoCodeOption.htmlBeautify && (html = html_beautify(html));
+                                editorHtml.setValue(html);
+                            }
 
-                            leoCode.utils.transitionEndFn($leoLoading.css({
-                                'opacity': 0,
-                                'visibility': 'hidden'
-                            }), function(event) {
-                                $leoLoading.remove();
-                            });
+                            if (cssArr && cssArr[0]) {
+                                css = cssArr[0];
 
-                            setTimeout(function() {
-                                leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
-                            }, 3000);
+                                css_beautify && leoCodeOption.cssBeautify && (css = css_beautify(css));
+                                editorCss.setValue(css);
+                            }
+
+                            if (jsArr && jsArr[0]) {
+                                js = jsArr[0];
+
+                                js_beautify && leoCodeOption.jsBeautify && (js = js_beautify(js));
+                                editorJs.setValue(js);
+                            }
+                        }
+
+                        $win.triggerHandler('editorChange', function() {
+                            fullScreenBtn.setState(leoCodeOption.isFullScreen);
                         });
-                    } else {
-                        $.when(leoCodeOption.htmlDfd, leoCodeOption.cssDfd, leoCodeOption.jsDfd).done(function(html, css, js) {
-                            if (html && html[0]) {
-                                html_beautify && leoCodeOption.htmlBeautify && (html[0] = html_beautify(html[0]));
-                                editorHtml.setValue(html[0]);
-                            }
+                    }).fail(function(data) {
+                        console.log(data);
+                    }).always(function() {
+                        var $leoLoading = $('#leoLoading');
 
-                            if (css && css[0]) {
-                                css_beautify && leoCodeOption.cssBeautify && (css[0] = css_beautify(css[0]));
-                                editorCss.setValue(css[0]);
-                            }
-
-                            if (js && js[0]) {
-                                js_beautify && leoCodeOption.jsBeautify && (js[0] = js_beautify(js[0]));
-                                editorJs.setValue(js[0]);
-                            }
-
-                            $win.triggerHandler('editorChange', function() {
-                                fullScreenBtn.setState(leoCodeOption.isFullScreen);
-                            });
-                        }).fail(function(data) {
-                            console.log(data);
-                        }).always(function() {
-                            var $leoLoading = $('#leoLoading');
-
-                            leoCode.utils.transitionEndFn($leoLoading.css({
-                                'opacity': 0,
-                                'visibility': 'hidden'
-                            }), function(event) {
-                                $leoLoading.remove();
-                            });
-
-                            setTimeout(function() {
-                                leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
-                            }, 3000);
+                        leoCode.utils.transitionEndFn($leoLoading.css({
+                            'opacity': 0,
+                            'visibility': 'hidden'
+                        }), function(event) {
+                            $leoLoading.remove();
                         });
-                    }
+
+                        setTimeout(function() {
+                            leoCodeOption.isHelpShow && $('#help').triggerHandler('click');
+                        }, 3000);
+                    });
                 }
 
                 initCode(leoCodeOption);
