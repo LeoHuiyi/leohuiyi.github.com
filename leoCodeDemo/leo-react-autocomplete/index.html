@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>leoCode-react</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.3/react-dom.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+    <script src="./leoCodeDemo/leo-react-autocomplete/Autocomplete.js"></script>
+</head>
+
+<body>
+    <div id="content"></div>
+    <script type="text/babel">
+        function getData(num){
+            let arr = [];
+
+            while(num --){
+                arr.push({
+                    key: num,
+                    value: `leo${num}`
+                });
+            }
+
+            return arr;
+        }
+
+        ReactDOM.render(
+            <leoReact.Autocomplete
+                width={396}
+                data={getData(10000)}
+                value={'leo100'}
+                filter={(data, search, value, label)=> {
+                    return data = data.filter((item)=> {
+                        return item[value].indexOf(search) > -1;
+                    });
+                }}
+                menuStyle={{'maxHeight': '200px'}}
+            />,
+            document.getElementById('content')
+        );
+    </script>
+</body>
+
+</html>

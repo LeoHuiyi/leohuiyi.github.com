@@ -91,18 +91,18 @@ var leoCode = {
             if (jsStr) {
                 index = htmlStr.indexOf('</body>');
                 if (index > -1) {
-                    htmlStr = htmlStr.slice(0, index) + '<script>' + jsStr + '</script>' + htmlStr.slice(index);
+                    htmlStr = htmlStr.slice(0, index) + '<script id="leoCodeJs">' + jsStr + '</script>' + htmlStr.slice(index);
                 } else {
-                    htmlStr += '<script>' + jsStr + '</script>';
+                    htmlStr += '<script id="leoCodeJs">' + jsStr + '</script>';
                 }
             }
 
             if (cssStr) {
                 index = htmlStr.indexOf('</body>');
                 if (index > -1) {
-                    htmlStr = htmlStr.slice(0, index) + '<style>' + cssStr + '</style>' + htmlStr.slice(index);
+                    htmlStr = htmlStr.slice(0, index) + '<style id="leoCodeCss">' + cssStr + '</style>' + htmlStr.slice(index);
                 } else {
-                    htmlStr += '<style>' + cssStr + '</style>';
+                    htmlStr += '<style id="leoCodeCss">' + cssStr + '</style>';
                 }
             }
 
